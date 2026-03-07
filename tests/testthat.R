@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(disaggMultiMap)
+library(DAST)
 
-test_check("disaggMultiMap")
+test_check("DAST")

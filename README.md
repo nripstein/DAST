@@ -1,4 +1,4 @@
-[![R-CMD-check](https://github.com/nripstein/disaggMultiMap/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/nripstein/disaggMultiMap/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/nripstein/DAST/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/nripstein/DAST/actions/workflows/R-CMD-check.yaml)
 
 ## Installation
 
@@ -6,12 +6,12 @@ You can install from Github with:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("nripstein/disaggMultiMap")
+devtools::install_github("nripstein/DAST")
 ```
 
 or the development branch from
 ``` r
-devtools::install_github("nripstein/disaggMultiMap", ref = "development")
+devtools::install_github("nripstein/DAST", ref = "development")
 ```
 
 ## Current Workflow
@@ -56,4 +56,3 @@ fit_tmb <- disag_model_mmap(
   )
 )
 ```
-

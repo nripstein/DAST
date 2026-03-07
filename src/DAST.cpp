@@ -1,7 +1,7 @@
 // EXACTLY FROM DESKTOP THAT WORKED
 // Data: Spatial field mesh and matrices, polygon data, covariate pixel data
 
-#define TMB_LIB_INIT R_init_disaggMultiMap
+#define TMB_LIB_INIT R_init_DAST
 #include <TMB.hpp>
 
 template <class Type>

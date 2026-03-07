@@ -613,7 +613,7 @@ make_model_object_mmap <- function(data,
     map        = tmb_map,
     random     = random_effects,
     silent     = silent,
-    DLL        = "disaggMultiMap"
+    DLL        = "DAST"
     # inner_control = list(trace = 10, REPORT=1) # for debugging
   )
 
