@@ -1,4 +1,6 @@
-[![R-CMD-check](https://github.com/nripstein/DAST/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/nripstein/DAST/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/nripstein/DAST/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/nripstein/DAST/actions/workflows/R-CMD-check.yaml) <!-- badges: start -->
+[![Codecov test coverage](https://codecov.io/gh/nripstein/DAST/graph/badge.svg)](https://app.codecov.io/gh/nripstein/DAST)
+<!-- badges: end -->
 
 ## Installation
 
