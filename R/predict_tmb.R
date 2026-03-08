@@ -1,3 +1,28 @@
+normalize_new_data_for_prediction_tmb <- function(new_data, n_times) {
+  if (is.null(new_data)) {
+    return(rep(list(NULL), n_times))
+  }
+  if (inherits(new_data, "SpatRaster")) {
+    return(rep(list(new_data), n_times))
+  }
+  if (is.list(new_data)) {
+    if (length(new_data) != n_times) {
+      stop(
+        "`new_data` list length must match the number of time points in the fitted model.",
+        call. = FALSE
+      )
+    }
+    if (any(!vapply(new_data, inherits, logical(1), what = "SpatRaster"))) {
+      stop("Each element of `new_data` must be a SpatRaster.", call. = FALSE)
+    }
+    return(new_data)
+  }
+  stop(
+    "`new_data` must be NULL, a SpatRaster, or a list of SpatRaster with length equal to the number of time points.",
+    call. = FALSE
+  )
+}
+
 #' Predict for Multi-Map Disaggregation Model fit with TMB
 #'
 #' @param object A fitted disag_model_mmap_tmb object.
@@ -13,6 +38,7 @@ predict.disag_model_mmap_tmb <- function(object, new_data = NULL,
                                          predict_iid = FALSE, N = 100, CI = 0.95, ...) {
   times   <- object$data$time_points
   n_times <- length(times)
+  new_data_by_time <- normalize_new_data_for_prediction_tmb(new_data, n_times)
 
   preds     <- vector("list", n_times)
   fields    <- vector("list", n_times)
@@ -23,14 +49,16 @@ predict.disag_model_mmap_tmb <- function(object, new_data = NULL,
   pars     <- parvec_to_param_list(object, raw_pars)
 
   for (i in seq_along(times)) {
-    cov_i <- object$data$covariate_rasters_list[[i]]
+    new_data_i <- new_data_by_time[[i]]
+    use_training_i <- is.null(new_data_i)
+    cov_i <- if (use_training_i) object$data$covariate_rasters_list[[i]] else new_data_i
     object$data$covariate_rasters <- cov_i
 
     objs <- setup_objects_mmap(object,
-                               new_data    = NULL,
+                               new_data    = new_data_i,
                                predict_iid = predict_iid,
                                time_index  = i,
-                               use_training = TRUE)
+                               use_training = use_training_i)
 
     out <- predict_single_raster_mmap(pars,
                                       objs,
@@ -130,6 +158,7 @@ predict_uncertainty_mmap <- function(model_output, new_data = NULL,
 
   times   <- model_output$data$time_points
   n_times <- length(times)
+  new_data_by_time <- normalize_new_data_for_prediction_tmb(new_data, n_times)
 
   realizations_list <- vector("list", n_times)
   ci_lower <- vector("list", n_times)
@@ -148,14 +177,16 @@ predict_uncertainty_mmap <- function(model_output, new_data = NULL,
   }
 
   for (i in seq_along(times)) {
-    cov_i <- model_output$data$covariate_rasters_list[[i]]
+    new_data_i <- new_data_by_time[[i]]
+    use_training_i <- is.null(new_data_i)
+    cov_i <- if (use_training_i) model_output$data$covariate_rasters_list[[i]] else new_data_i
     model_output$data$covariate_rasters <- cov_i
 
     objs <- setup_objects_mmap(model_output,
-                               new_data    = NULL,
+                               new_data    = new_data_i,
                                predict_iid = predict_iid,
                                time_index  = i,
-                               use_training = TRUE)
+                               use_training = use_training_i)
 
     draw_preds <- vector("list", N)
     for (r in seq_len(N)) {
