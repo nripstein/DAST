@@ -18,7 +18,7 @@ Description: Provides tools for spatio-temporal disaggregation of areal data acr
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-URL: https://github.com/nripstein/DAST
+URL: https://github.com/nripstein/DAST, http://noahripstein.com/DAST/
 LinkingTo: TMB, RcppEigen
 Imports:
     aghq,
