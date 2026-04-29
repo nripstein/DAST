@@ -28,18 +28,12 @@ jobs:
           r-version: ${{ matrix.config.r }}
           use-public-rspm: true
 
-      - uses: r-spatial/setup@v2
-        with:
-          gdal: true
-          proj: true
-          geos: true
-    
-      - name: Install spatial system dependencies
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y proj-data proj-bin libproj-dev libgdal-dev gdal-bin libgeos-dev
-          echo "PROJ_LIB=/usr/share/proj" >> $GITHUB_ENV
+      # - name: Install spatial system dependencies
+      #   if: runner.os == 'Linux'
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install -y proj-data proj-bin libproj-dev libgdal-dev gdal-bin libgeos-dev
+      #     echo "PROJ_LIB=/usr/share/proj" >> $GITHUB_ENV
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
