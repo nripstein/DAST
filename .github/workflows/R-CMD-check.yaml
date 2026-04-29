@@ -28,63 +28,18 @@ jobs:
           r-version: ${{ matrix.config.r }}
           use-public-rspm: true
 
-      - name: Install spatial system dependencies and verify PROJ
+      - uses: r-spatial/actions/setup@v2
+        with:
+          gdal: 'yes'
+          proj: 'yes'
+          geos: 'yes'
+
+      - name: Install spatial system dependencies
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y proj-data proj-bin libproj-dev libgdal-dev gdal-bin libgeos-dev
-
-          # common candidate locations for proj.db
-          CANDIDATES=(
-            /usr/share/proj
-            /usr/local/share/proj
-            /usr/lib/proj
-            /opt/conda/share/proj
-          )
-
-          FOUND_DIR=""
-          for d in "${CANDIDATES[@]}"; do
-            if [ -f "$d/proj.db" ]; then
-              FOUND_DIR="$d"
-              break
-            fi
-          done
-
-          # If not found, list likely places to help debugging
-          if [ -z "$FOUND_DIR" ]; then
-            echo "ERROR: proj.db not found in standard locations. Listing /usr/share and /usr/local/share:"
-            ls -la /usr/share || true
-            ls -la /usr/local/share || true
-            echo "Attempting to locate proj.db with 'find' (may be slow):"
-            sudo find / -maxdepth 4 -type f -name proj.db -print || true
-            exit 1
-          fi
-
-          echo "Found proj.db in: $FOUND_DIR"
-          echo "PROJ_LIB=$FOUND_DIR" >> $GITHUB_ENV
-          echo "PROJ_DATA=$FOUND_DIR" >> $GITHUB_ENV
-          # Export for the current step (so diagnostic commands below see it)
-          export PROJ_LIB="$FOUND_DIR"
-          export PROJ_DATA="$FOUND_DIR"
-
-          # Print basic diagnostics so CI logs show exact versions and the files
-          echo "proj version:"; proj -V || projinfo --version || true
-          echo "gdalinfo version:"; gdalinfo --version || true
-          echo "List proj directory contents:"
-          ls -la "$FOUND_DIR"
-
-          # Quick runtime test (optional): projinfo on EPSG:4326
-          echo "projinfo test (EPSG:4326):"
-          projinfo EPSG:4326 || true
-
-  
-
-      # - name: Install spatial system dependencies
-      #   if: runner.os == 'Linux'
-      #   run: |
-      #     sudo apt-get update
-      #     sudo apt-get install -y proj-data proj-bin libproj-dev libgdal-dev gdal-bin libgeos-dev
-      #     echo "PROJ_LIB=/usr/share/proj" >> $GITHUB_ENV
+          echo "PROJ_LIB=/usr/share/proj" >> $GITHUB_ENV
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
