@@ -17,6 +17,12 @@
 #' @param silent Logical: if TRUE, suppress TMB's console output.
 #' @param starting_values Optional named list of starting parameter values.
 #' @param optimizer Optional optimizer name passed to AGHQ control.
+#' @param outer_derivative_method Character; \code{"tmb"} (default) uses TMB's
+#'   analytic outer gradient and \code{"finite_difference"} uses finite
+#'   differences of \code{obj$fn} for outer optimization and Hessian
+#'   construction. The finite-difference option is only supported with
+#'   \code{optimizer = "nlminb"}. The inner Laplace approximation is still
+#'   handled by TMB.
 #' @param verbose Logical: if TRUE, print total runtime.
 #' @return An object of class 'disag_model_mmap_aghq' (a list with '$aghq_model', '$data', and '$model_setup').
 #' @export
@@ -32,6 +38,7 @@ disag_model_mmap_aghq <- function(data,
                                   silent = TRUE,
                                   starting_values = NULL,
                                   optimizer = NULL,
+                                  outer_derivative_method = "tmb",
                                   verbose = FALSE) {
   start_time <- Sys.time()
 
@@ -42,6 +49,10 @@ disag_model_mmap_aghq <- function(data,
   if (!is.null(priors) && !is.list(priors)) {
     stop("`priors` must be NULL or a named list of prior values.")
   }
+  outer_derivative_method <- match.arg(
+    outer_derivative_method,
+    choices = c("tmb", "finite_difference")
+  )
 
   #-- 2. Build TMB ADFun object --
   obj <- make_model_object_mmap(
@@ -62,6 +73,14 @@ disag_model_mmap_aghq <- function(data,
   if (is.null(optimizer)) {
     optimizer <- "BFGS"
   }
+  if (identical(outer_derivative_method, "finite_difference") &&
+      !identical(optimizer, "nlminb")) {
+    stop(
+      "`outer_derivative_method = \"finite_difference\"` for AGHQ requires ",
+      "`optimizer = \"nlminb\"`.",
+      call. = FALSE
+    )
+  }
   if (verbose) {
     message("Using optimizer: ", optimizer)
   }
@@ -75,7 +94,11 @@ disag_model_mmap_aghq <- function(data,
     # This mirrors the exact computation that the nripstein/aghq fork performs
     # internally: nlminb for optimization, numDeriv::jacobian with Richardson
     # extrapolation for the Hessian.
-    opt <- stats::nlminb(obj$par, obj$fn, obj$gr)
+    if (identical(outer_derivative_method, "finite_difference")) {
+      opt <- stats::nlminb(obj$par, obj$fn)
+    } else {
+      opt <- stats::nlminb(obj$par, obj$fn, obj$gr)
+    }
 
     if (opt$convergence != 0) {
       warning("nlminb optimizer did not converge (code ", opt$convergence, "): ", opt$message)
@@ -83,7 +106,17 @@ disag_model_mmap_aghq <- function(data,
 
     # Hessian of obj$fn (neg-log-posterior) at mode — positive definite.
     # Uses Richardson extrapolation on obj$gr, matching the fork's approach.
-    hess <- numDeriv::jacobian(obj$gr, opt$par, method = "Richardson")
+    if (identical(outer_derivative_method, "finite_difference")) {
+      hess <- numDeriv::hessian(obj$fn, opt$par, method = "Richardson")
+      dimnames(hess) <- list(names(opt$par), names(opt$par))
+      warn_if_outer_hessian_suspicious(hess, "AGHQ outer finite-difference Hessian")
+      ff_gr <- function(x) -numDeriv::grad(obj$fn, x, method = "Richardson")
+      ff_he <- function(x) -numDeriv::hessian(obj$fn, x, method = "Richardson")
+    } else {
+      hess <- numDeriv::jacobian(obj$gr, opt$par, method = "Richardson")
+      ff_gr <- function(x) -obj$gr(x)
+      ff_he <- function(x) -numDeriv::jacobian(obj$gr, x, method = "Richardson")
+    }
 
     # Structure mirrors what aghq::optimize_theta() returns internally:
     # - ff$fn/gr/he: log-posterior (negated TMB objective) for quadrature evaluation
@@ -92,8 +125,8 @@ disag_model_mmap_aghq <- function(data,
     optresults <- list(
       ff = list(
         fn = function(x) -obj$fn(x),
-        gr = function(x) -obj$gr(x),
-        he = function(x) -numDeriv::jacobian(obj$gr, x, method = "Richardson")
+        gr = ff_gr,
+        he = ff_he
       ),
       mode        = opt$par,
       hessian     = hess,
@@ -201,6 +234,7 @@ disag_model_mmap_aghq <- function(data,
       iid    = iid,
       time_varying_betas = time_varying_betas,
       fixed_effect_betas = fixed_effect_betas,
+      outer_derivative_method = outer_derivative_method,
       coef_meta = coef_meta,
       theta_order = theta_order,
       random_order = random_order,

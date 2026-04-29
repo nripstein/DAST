@@ -18,24 +18,51 @@ skip_if_aghq_opted_out_engine_args <- function() {
 test_that("engine.args routes TMB-specific controls", {
   data_obj <- get_cached_prepared_data("prep_default_mesh")
 
-  fit <- suppressMessages(
-    disag_model_mmap(
-      data = data_obj,
-      engine = "TMB",
-      family = "poisson",
-      link = "log",
-      engine.args = list(
-        iterations = 20,
-        hess_control_ndeps = 1e-4
-      ),
-      field = FALSE,
-      iid = FALSE,
-      silent = TRUE
+  fit <- suppressWarnings(
+    suppressMessages(
+      disag_model_mmap(
+        data = data_obj,
+        engine = "TMB",
+        family = "poisson",
+        link = "log",
+        engine.args = list(
+          iterations = 20,
+          hess_control_ndeps = 1e-4
+        ),
+        field = FALSE,
+        iid = FALSE,
+        silent = TRUE
+      )
     )
   )
 
   expect_s3_class(fit, "disag_model_mmap_tmb")
   expect_s3_class(fit, "disag_model_mmap")
+})
+
+test_that("engine.args routes TMB finite-difference outer derivatives", {
+  data_obj <- get_cached_prepared_data("prep_default_mesh")
+
+  fit <- suppressWarnings(
+    suppressMessages(
+      disag_model_mmap(
+        data = data_obj,
+        engine = "TMB",
+        family = "poisson",
+        link = "log",
+        engine.args = list(
+          iterations = 20,
+          outer_derivative_method = "finite_difference"
+        ),
+        field = FALSE,
+        iid = FALSE,
+        silent = TRUE
+      )
+    )
+  )
+
+  expect_s3_class(fit, "disag_model_mmap_tmb")
+  expect_equal(fit$model_setup$outer_derivative_method, "finite_difference")
 })
 
 test_that("engine.args unknown keys warn and are ignored", {
@@ -197,6 +224,27 @@ test_that("invalid engine-specific values are rejected before fit", {
     ),
     "`optimizer` must be a non-empty character scalar"
   )
+
+  expect_error(
+    disag_model_mmap(
+      data = data_obj,
+      engine = "TMB",
+      engine.args = list(outer_derivative_method = "fd")
+    ),
+    "`outer_derivative_method` must be one of"
+  )
+
+  expect_error(
+    disag_model_mmap(
+      data = data_obj,
+      engine = "AGHQ",
+      engine.args = list(
+        optimizer = "BFGS",
+        outer_derivative_method = "finite_difference"
+      )
+    ),
+    "requires `engine.args = list\\(optimizer = \"nlminb\"\\)`"
+  )
 })
 
 test_that("AGHQ engine.args are routed and default k in wrapper remains 2 (gated)", {
@@ -231,6 +279,32 @@ test_that("AGHQ engine.args are routed and default k in wrapper remains 2 (gated
   )
   expect_s3_class(fit_default, "disag_model_mmap_aghq")
   expect_equal(as.integer(fit_default$aghq_model$normalized_posterior$grid$level[[1]]), 2L)
+})
+
+test_that("AGHQ engine.args route finite-difference outer derivatives with nlminb (gated)", {
+  skip_if_aghq_opted_out_engine_args()
+  data_obj <- get_cached_aghq_prepared_data("aghq_small_onecov_mesh")
+
+  fit <- suppressWarnings(
+    disag_model_mmap(
+      data = data_obj,
+      engine = "AGHQ",
+      family = "poisson",
+      link = "log",
+      engine.args = list(
+        aghq_k = 1,
+        optimizer = "nlminb",
+        outer_derivative_method = "finite_difference"
+      ),
+      field = TRUE,
+      iid = TRUE,
+      silent = TRUE
+    )
+  )
+
+  expect_s3_class(fit, "disag_model_mmap_aghq")
+  expect_equal(fit$model_setup$outer_derivative_method, "finite_difference")
+  expect_equal(as.integer(fit$aghq_model$normalized_posterior$grid$level[[1]]), 1L)
 })
 
 test_that("legacy AGHQ top-level args are deprecated but still supported (gated)", {

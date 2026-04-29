@@ -17,9 +17,13 @@
 #' @param engine.args Optional named list of engine-specific options.
 #'   Supported keys:
 #'   \itemize{
-#'     \item AGHQ: \code{aghq_k}, \code{optimizer}
-#'     \item TMB: \code{iterations}, \code{hess_control_parscale}, \code{hess_control_ndeps}
+#'     \item AGHQ: \code{aghq_k}, \code{optimizer}, \code{outer_derivative_method}
+#'     \item TMB: \code{iterations}, \code{hess_control_parscale}, \code{hess_control_ndeps}, \code{outer_derivative_method}
 #'   }
+#'   \code{outer_derivative_method} may be \code{"tmb"} (default) or
+#'   \code{"finite_difference"}. The finite-difference option affects only the
+#'   outer fixed/hyperparameter optimization and Hessian; TMB still handles the
+#'   inner Laplace approximation.
 #' @param aghq_k Deprecated at wrapper level; use \code{engine.args = list(aghq_k = ...)}.
 #'   Retained for backward compatibility.
 #' @param field Logical; include spatial field?
@@ -148,13 +152,13 @@ get_engine_specs_mmap <- function() {
   list(
     AGHQ = list(
       fit_fun = disag_model_mmap_aghq,
-      engine_keys = c("aghq_k", "optimizer"),
-      defaults = list(aghq_k = 2L)
+      engine_keys = c("aghq_k", "optimizer", "outer_derivative_method"),
+      defaults = list(aghq_k = 2L, outer_derivative_method = "tmb")
     ),
     TMB = list(
       fit_fun = disag_model_mmap_tmb,
-      engine_keys = c("iterations", "hess_control_parscale", "hess_control_ndeps"),
-      defaults = list()
+      engine_keys = c("iterations", "hess_control_parscale", "hess_control_ndeps", "outer_derivative_method"),
+      defaults = list(outer_derivative_method = "tmb")
     )
   )
 }
@@ -255,6 +259,27 @@ validate_engine_specific_values <- function(engine, resolved_engine_args) {
   }
 
   if (engine == "AGHQ") {
+    if ("outer_derivative_method" %in% names(resolved_engine_args)) {
+      method <- resolved_engine_args$outer_derivative_method
+      valid <- c("tmb", "finite_difference")
+      if (!is.character(method) || length(method) != 1L || !(method %in% valid)) {
+        stop(
+          "`outer_derivative_method` must be one of: ",
+          paste(valid, collapse = ", "),
+          call. = FALSE
+        )
+      }
+      if (identical(method, "finite_difference")) {
+        opt <- resolved_engine_args$optimizer
+        if (is.null(opt) || !identical(opt, "nlminb")) {
+          stop(
+            "`outer_derivative_method = \"finite_difference\"` for AGHQ requires ",
+            "`engine.args = list(optimizer = \"nlminb\")`.",
+            call. = FALSE
+          )
+        }
+      }
+    }
     if ("aghq_k" %in% names(resolved_engine_args)) {
       k <- resolved_engine_args$aghq_k
       if (!is_scalar_integerish(k) || k < 1) {
@@ -271,6 +296,17 @@ validate_engine_specific_values <- function(engine, resolved_engine_args) {
   }
 
   if (engine == "TMB") {
+    if ("outer_derivative_method" %in% names(resolved_engine_args)) {
+      method <- resolved_engine_args$outer_derivative_method
+      valid <- c("tmb", "finite_difference")
+      if (!is.character(method) || length(method) != 1L || !(method %in% valid)) {
+        stop(
+          "`outer_derivative_method` must be one of: ",
+          paste(valid, collapse = ", "),
+          call. = FALSE
+        )
+      }
+    }
     if ("iterations" %in% names(resolved_engine_args)) {
       it <- resolved_engine_args$iterations
       if (!is_scalar_integerish(it) || it < 1) {
@@ -293,6 +329,52 @@ validate_engine_specific_values <- function(engine, resolved_engine_args) {
   }
 
   resolved_engine_args
+}
+
+warn_if_outer_hessian_suspicious <- function(hess, context = "outer finite-difference Hessian") {
+  if (!is.matrix(hess)) {
+    hess <- as.matrix(hess)
+  }
+
+  finite <- all(is.finite(hess))
+  max_asym <- if (nrow(hess) == ncol(hess)) {
+    max(abs(hess - t(hess)), na.rm = TRUE)
+  } else {
+    Inf
+  }
+  min_eig <- NA_real_
+
+  if (finite && nrow(hess) == ncol(hess) && nrow(hess) > 0L) {
+    sym_hess <- 0.5 * (hess + t(hess))
+    eig <- tryCatch(
+      eigen(sym_hess, symmetric = TRUE, only.values = TRUE)$values,
+      error = function(e) NA_real_
+    )
+    if (all(is.finite(eig))) {
+      min_eig <- min(eig)
+    }
+  }
+
+  bad <- !finite ||
+    !is.finite(max_asym) ||
+    max_asym > sqrt(.Machine$double.eps) ||
+    !is.finite(min_eig) ||
+    min_eig <= 0
+
+  if (bad) {
+    warning(
+      sprintf(
+        "%s is numerically suspicious (finite=%s, max asymmetry=%s, min symmetric eigenvalue=%s). Continuing without modifying the Hessian.",
+        context,
+        finite,
+        format(max_asym, digits = 4),
+        format(min_eig, digits = 4)
+      ),
+      call. = FALSE
+    )
+  }
+
+  invisible(hess)
 }
 
 #' Build the TMB ADFun object for multi-map disaggregation

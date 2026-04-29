@@ -44,9 +44,13 @@ effects so they are integrated in the inner Laplace step.}
 \item{engine.args}{Optional named list of engine-specific options.
 Supported keys:
 \itemize{
-  \item AGHQ: \code{aghq_k}, \code{optimizer}
-  \item TMB: \code{iterations}, \code{hess_control_parscale}, \code{hess_control_ndeps}
+  \item AGHQ: \code{aghq_k}, \code{optimizer}, \code{outer_derivative_method}
+  \item TMB: \code{iterations}, \code{hess_control_parscale}, \code{hess_control_ndeps}, \code{outer_derivative_method}
 }}
+\code{outer_derivative_method} may be \code{"tmb"} (default) or
+\code{"finite_difference"}. The finite-difference option affects only the
+outer fixed/hyperparameter optimization and Hessian; TMB still handles the
+inner Laplace approximation.}
 
 \item{aghq_k}{Deprecated at wrapper level; use \code{engine.args = list(aghq_k = ...)}.
 Retained for backward compatibility.}

@@ -17,6 +17,7 @@ disag_model_mmap_aghq(
   silent = TRUE,
   starting_values = NULL,
   optimizer = NULL,
+  outer_derivative_method = "tmb",
   verbose = FALSE
 )
 }
@@ -45,6 +46,13 @@ in AGHQ outer parameters. If FALSE, active betas are treated as TMB random effec
 \item{starting_values}{Optional named list of starting parameter values.}
 
 \item{optimizer}{Optional optimizer name passed to AGHQ control.}
+
+\item{outer_derivative_method}{Character; \code{"tmb"} (default) uses TMB's
+analytic outer gradient and \code{"finite_difference"} uses finite
+differences of \code{obj$fn} for outer optimization and Hessian
+construction. The finite-difference option is only supported with
+\code{optimizer = "nlminb"}. The inner Laplace approximation is still
+handled by TMB.}
 
 \item{verbose}{Logical: if TRUE, print total runtime.}
 }

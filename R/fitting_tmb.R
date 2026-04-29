@@ -18,6 +18,10 @@
 #' @param iid Logical: include polygon-specific IID effects?
 #' @param hess_control_parscale Optional numeric vector for scaling the Hessian steps.
 #' @param hess_control_ndeps Numeric; relative step size for Hessian finite-difference (default 1e-4).
+#' @param outer_derivative_method Character; \code{"tmb"} (default) uses TMB's
+#'   analytic outer gradient and \code{"finite_difference"} uses finite
+#'   differences of \code{obj$fn} for outer optimization and Hessian
+#'   construction. The inner Laplace approximation is still handled by TMB.
 #' @param silent Logical: if TRUE, suppress TMB's console output.
 #' @param starting_values Optional named list of starting parameter values.
 #' @param verbose Logical: if TRUE, print total runtime.
@@ -36,6 +40,7 @@ disag_model_mmap_tmb <- function(data,
                                  iid = TRUE,
                                  hess_control_parscale = NULL,
                                  hess_control_ndeps = 1e-4,
+                                 outer_derivative_method = "tmb",
                                  silent = TRUE,
                                  starting_values = NULL,
                                  verbose = FALSE) {
@@ -46,6 +51,10 @@ disag_model_mmap_tmb <- function(data,
   }
   if(!is.null(priors)) stopifnot(inherits(priors, 'list'))
   stopifnot(is.numeric(iterations))
+  outer_derivative_method <- match.arg(
+    outer_derivative_method,
+    choices = c("tmb", "finite_difference")
+  )
 
   obj <- make_model_object_mmap(data = data,
                                 priors = priors,
@@ -60,13 +69,24 @@ disag_model_mmap_tmb <- function(data,
 
   message("Fitting ", family," disaggregation model via TMB.")
   if (length(obj$par) > 0L) {
-    opt <- stats::nlminb(obj$par, obj$fn, obj$gr,
-                         control = list(iter.max = iterations, trace = 0))
+    if (identical(outer_derivative_method, "finite_difference")) {
+      opt <- stats::nlminb(obj$par, obj$fn,
+                           control = list(iter.max = iterations, trace = 0))
+    } else {
+      opt <- stats::nlminb(obj$par, obj$fn, obj$gr,
+                           control = list(iter.max = iterations, trace = 0))
+    }
 
     if(opt$convergence != 0) warning('The model did not converge. Try changing starting_values')
 
-    hess_control <- disagg_setup_hess_control(opt, hess_control_parscale, hess_control_ndeps)
-    hess <- stats::optimHess(opt$par, fn = obj$fn, gr = obj$gr, control = hess_control)
+    if (identical(outer_derivative_method, "finite_difference")) {
+      hess <- numDeriv::hessian(obj$fn, opt$par, method = "Richardson")
+      dimnames(hess) <- list(names(opt$par), names(opt$par))
+      warn_if_outer_hessian_suspicious(hess, "TMB outer finite-difference Hessian")
+    } else {
+      hess_control <- disagg_setup_hess_control(opt, hess_control_parscale, hess_control_ndeps)
+      hess <- stats::optimHess(opt$par, fn = obj$fn, gr = obj$gr, control = hess_control)
+    }
   } else {
     objective <- as.numeric(obj$fn(numeric(0)))
     opt <- list(
@@ -114,6 +134,7 @@ disag_model_mmap_tmb <- function(data,
                                           iid = iid,
                                           time_varying_betas = time_varying_betas,
                                           fixed_effect_betas = fixed_effect_betas,
+                                          outer_derivative_method = outer_derivative_method,
                                           coef_meta = coef_meta,
                                           theta_order = tmb_meta$theta_order,
                                           fixed_order = tmb_meta$fixed_order,

@@ -16,6 +16,7 @@ disag_model_mmap_tmb(
   iid = TRUE,
   hess_control_parscale = NULL,
   hess_control_ndeps = 1e-04,
+  outer_derivative_method = "tmb",
   silent = TRUE,
   starting_values = NULL,
   verbose = FALSE
@@ -45,6 +46,11 @@ as random effects in the inner Laplace step.}
 \item{hess_control_parscale}{Optional numeric vector for scaling the Hessian steps.}
 
 \item{hess_control_ndeps}{Numeric; relative step size for Hessian finite-difference (default 1e-4).}
+
+\item{outer_derivative_method}{Character; \code{"tmb"} (default) uses TMB's
+analytic outer gradient and \code{"finite_difference"} uses finite
+differences of \code{obj$fn} for outer optimization and Hessian
+construction. The inner Laplace approximation is still handled by TMB.}
 
 \item{silent}{Logical: if TRUE, suppress TMB's console output.}
 
