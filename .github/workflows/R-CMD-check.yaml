@@ -28,12 +28,12 @@ jobs:
           r-version: ${{ matrix.config.r }}
           use-public-rspm: true
 
-      - uses: r-spatial/actions/setup@v2
+      - uses: r-spatial/setup@v2
         with:
-          gdal: 'yes'
-          proj: 'yes'
-          geos: 'yes'
-
+          gdal: true
+          proj: true
+          geos: true
+    
       - name: Install spatial system dependencies
         if: runner.os == 'Linux'
         run: |
