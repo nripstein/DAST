@@ -46,6 +46,7 @@ jobs:
           needs: check
 
       - name: Configure PROJ data path
+        if: runner.os == 'macOS'
         shell: Rscript {0}
         run: |
           proj_dirs <- c(
