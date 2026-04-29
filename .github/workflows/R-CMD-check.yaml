@@ -44,6 +44,21 @@ jobs:
           extra-packages: any::rcmdcheck
           needs: check
 
+      - name: Configure PROJ data path
+        shell: Rscript {0}
+        run: |
+          proj_dirs <- c(
+            system.file("proj", package = "terra"),
+            system.file("proj", package = "sf")
+          )
+          proj_dirs <- proj_dirs[file.exists(file.path(proj_dirs, "proj.db"))]
+          if (!length(proj_dirs)) {
+            stop("Could not find proj.db in the installed terra or sf packages.")
+          }
+          cat("Using PROJ data path:", proj_dirs[[1]], "\n")
+          cat("PROJ_DATA=", proj_dirs[[1]], "\n", sep = "", file = Sys.getenv("GITHUB_ENV"), append = TRUE)
+          cat("PROJ_LIB=", proj_dirs[[1]], "\n", sep = "", file = Sys.getenv("GITHUB_ENV"), append = TRUE)
+
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
