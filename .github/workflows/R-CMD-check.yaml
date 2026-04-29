@@ -29,9 +29,9 @@ jobs:
           use-public-rspm: true
 
       - name: Set GDAL and PROJ paths
-        run: |
-          echo "PROJ_LIB=$(projinfo --config | grep PROJ_LIB | cut -d '=' -f2)" >> $GITHUB_ENV
-          echo "GDAL_DATA=$(gdal-config --datadir)" >> $GITHUB_ENV
+      run: |
+        echo "PROJ_LIB=$(projinfo --config | grep PROJ_LIB | cut -d '=' -f2)" >> $GITHUB_ENV
+        echo "GDAL_DATA=$(gdal-config --datadir)" >> $GITHUB_ENV
 
       - name: Run R CMD check
       run: |
