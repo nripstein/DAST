@@ -7,13 +7,13 @@
 You can install from Github with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("nripstein/DAST")
+# install.packages("remotes")
+remotes::install_github("nripstein/DAST")
 ```
 
 or the development branch from
 ``` r
-devtools::install_github("nripstein/DAST", ref = "development")
+remotes::install_github("nripstein/DAST", ref = "development")
 ```
 
 ## Current Workflow
