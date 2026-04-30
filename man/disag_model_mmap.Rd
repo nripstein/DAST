@@ -42,11 +42,10 @@ If FALSE and \code{engine = "AGHQ"}, beta coefficients are moved to TMB random
 effects so they are integrated in the inner Laplace step.}
 
 \item{engine.args}{Optional named list of engine-specific options.
-Supported keys:
-\itemize{
-  \item AGHQ: \code{aghq_k}, \code{optimizer}, \code{outer_derivative_method}
-  \item TMB: \code{iterations}, \code{hess_control_parscale}, \code{hess_control_ndeps}, \code{outer_derivative_method}
-}}
+Supported AGHQ keys are \code{aghq_k}, \code{optimizer}, and
+\code{outer_derivative_method}. Supported TMB keys are \code{iterations},
+\code{hess_control_parscale}, \code{hess_control_ndeps}, and
+\code{outer_derivative_method}.
 \code{outer_derivative_method} may be \code{"tmb"} (default) or
 \code{"finite_difference"}. The finite-difference option affects only the
 outer fixed/hyperparameter optimization and Hessian; TMB still handles the
