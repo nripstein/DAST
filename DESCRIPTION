@@ -34,8 +34,11 @@ Imports:
     terra,
     TMB
 Suggests: 
+    knitr,
+    rmarkdown,
     rstan,
     testthat (>= 3.0.0),
     tmbstan
 RoxygenNote: 7.3.3
+VignetteBuilder: knitr
 Config/testthat/edition: 3
