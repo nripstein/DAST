@@ -34,6 +34,8 @@ Imports:
     terra,
     TMB
 Suggests: 
-    testthat (>= 3.0.0)
+    rstan,
+    testthat (>= 3.0.0),
+    tmbstan
 RoxygenNote: 7.3.3
 Config/testthat/edition: 3

@@ -1,4 +1,4 @@
-#' Fit a multi-map disaggregation model (via AGHQ or TMB)
+#' Fit a multi-map disaggregation model (via AGHQ, TMB, or MCMC)
 #'
 #' @description
 #' Top-level fitting wrapper with engine dispatch and engine-specific argument
@@ -8,7 +8,8 @@
 #' @param priors Optional named list of prior overrides.
 #' @param family One of \code{"gaussian"}, \code{"binomial"}, \code{"poisson"}, or \code{"negbinomial"}.
 #' @param link One of \code{"identity"}, \code{"logit"}, or \code{"log"}.
-#' @param engine Character; either \code{"AGHQ"} or \code{"TMB"}.
+#' @param engine Character; one of \code{"AGHQ"}, \code{"TMB"}, or
+#'   \code{"MCMC"}. The MCMC engine uses \pkg{tmbstan}.
 #' @param time_varying_betas Logical; if TRUE, each time point has its own fixed-effect.
 #' @param fixed_effect_betas Logical; if TRUE (default), beta coefficients are
 #'   treated as fixed effects in the AGHQ outer parameter block (current behavior).
@@ -23,6 +24,12 @@
 #'   \code{"finite_difference"}. The finite-difference option affects only the
 #'   outer fixed/hyperparameter optimization and Hessian; TMB still handles the
 #'   inner Laplace approximation.
+#'   Supported MCMC keys are \code{chains}, \code{iter}, \code{warmup},
+#'   \code{thin}, \code{cores}, \code{seed}, \code{refresh}, \code{laplace},
+#'   \code{lower}, \code{upper}, and \code{control}. Additional named MCMC keys
+#'   are passed through to \code{tmbstan::tmbstan()} and
+#'   \code{rstan::sampling()}. \code{iter} is the total number of Stan
+#'   iterations, including warmup.
 #' @param aghq_k Deprecated at wrapper level; use \code{engine.args = list(aghq_k = ...)}.
 #'   Retained for backward compatibility.
 #' @param field Logical; include spatial field?
@@ -35,14 +42,15 @@
 #' @param ... Additional arguments. Engine-specific arguments passed via \code{...}
 #'   are deprecated in this wrapper and should be moved to \code{engine.args}.
 #'
-#' @return A fitted model object of class \code{disag_model_mmap_tmb} or
-#'   \code{disag_model_mmap_aghq} (both also inherit \code{disag_model_mmap}).
+#' @return A fitted model object of class \code{disag_model_mmap_tmb},
+#'   \code{disag_model_mmap_aghq}, or \code{disag_model_mmap_mcmc} (all also
+#'   inherit \code{disag_model_mmap}).
 #' @export
 disag_model_mmap <- function(data,
                              priors = NULL,
                              family = "poisson",
                              link   = "log",
-                             engine = c("AGHQ","TMB"),
+                             engine = c("AGHQ", "TMB", "MCMC"),
                              time_varying_betas = FALSE,
                              fixed_effect_betas = TRUE,
                              engine.args = NULL,
@@ -158,6 +166,15 @@ get_engine_specs_mmap <- function() {
       fit_fun = disag_model_mmap_tmb,
       engine_keys = c("iterations", "hess_control_parscale", "hess_control_ndeps", "outer_derivative_method"),
       defaults = list(outer_derivative_method = "tmb")
+    ),
+    MCMC = list(
+      fit_fun = disag_model_mmap_mcmc,
+      engine_keys = c(
+        "chains", "iter", "warmup", "thin", "cores", "seed", "refresh",
+        "laplace", "lower", "upper", "control"
+      ),
+      defaults = list(chains = 4L, iter = 2000L, laplace = FALSE),
+      allow_extra_args = TRUE
     )
   )
 }
@@ -198,9 +215,10 @@ resolve_engine_args_mmap <- function(engine,
                                      legacy_named_args,
                                      dot_engine_args) {
   allowed <- engine_spec$engine_keys
+  allow_extra_args <- isTRUE(engine_spec$allow_extra_args)
 
   unknown_engine_args <- setdiff(names(engine_args), allowed)
-  if (length(unknown_engine_args)) {
+  if (length(unknown_engine_args) && !allow_extra_args) {
     warning(
       paste0(
         "Ignoring unknown `engine.args` key(s) for engine ",
@@ -215,6 +233,9 @@ resolve_engine_args_mmap <- function(engine,
     )
     keep_idx <- names(engine_args) %in% allowed
     engine_args <- engine_args[keep_idx]
+  }
+  if (allow_extra_args) {
+    allowed <- unique(c(allowed, names(engine_args), names(dot_engine_args), names(legacy_named_args)))
   }
 
   resolved <- engine_spec$defaults
@@ -325,6 +346,26 @@ validate_engine_specific_values <- function(engine, resolved_engine_args) {
         stop("`hess_control_ndeps` must be a numeric scalar > 0.", call. = FALSE)
       }
     }
+  }
+
+  if (engine == "MCMC") {
+    reserved <- intersect(
+      names(resolved_engine_args),
+      c(
+        "data", "priors", "family", "link", "engine", "time_varying_betas",
+        "fixed_effect_betas", "engine.args", "aghq_k", "field", "iid",
+        "silent", "starting_values", "optimizer", "verbose"
+      )
+    )
+    if (length(reserved)) {
+      stop(
+        "The following MCMC `engine.args` key(s) must be supplied as top-level arguments instead: ",
+        paste(reserved, collapse = ", "),
+        ".",
+        call. = FALSE
+      )
+    }
+    resolved_engine_args <- validate_mcmc_engine_args_values(resolved_engine_args)
   }
 
   resolved_engine_args

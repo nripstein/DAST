@@ -436,3 +436,222 @@ print.summary.disag_model_mmap_aghq <- function(x, ...) {
   # Return invisibly
   return(invisible(x))
 }
+
+
+#' Print method for 'disag_model_mmap_mcmc' objects
+#'
+#' @description
+#' Displays a brief overview of a multi-map disaggregation model fit with the
+#' MCMC engine.
+#'
+#' @param x A 'disag_model_mmap_mcmc' object.
+#' @param ... Additional arguments (unused).
+#'
+#' @return Invisibly returns the original object.
+#' @method print disag_model_mmap_mcmc
+#' @export
+print.disag_model_mmap_mcmc <- function(x, ...) {
+  if (!inherits(x, "disag_model_mmap_mcmc")) {
+    stop("Object must be of class 'disag_model_mmap_mcmc'", call. = FALSE)
+  }
+
+  model_info <- tryCatch(x$model_setup, error = function(e) list())
+  mcmc_args <- tryCatch(x$model_setup$mcmc_args, error = function(e) list())
+  n_sampled <- length(tryCatch(x$model_setup$sampled_parameter_names_raw, error = function(e) character(0)))
+
+  cat("Disaggregation model (multi-map) fit with MCMC via tmbstan\n")
+  cat("==========================================================\n")
+  cat(sprintf("Family: %s\n", model_info$family %||% "unknown"))
+  cat(sprintf("Link function: %s\n", model_info$link %||% "unknown"))
+  cat(sprintf("Spatial field included: %s\n", ifelse(isTRUE(model_info$field), "Yes", "No")))
+  cat(sprintf("IID effects included: %s\n", ifelse(isTRUE(model_info$iid), "Yes", "No")))
+  cat(sprintf("Betas as fixed effects: %s\n", ifelse(isTRUE(model_info$fixed_effect_betas), "Yes", "No")))
+  cat(sprintf("Laplace approximation: %s\n", ifelse(isTRUE(mcmc_args$laplace), "Yes", "No")))
+  cat(sprintf("Chains: %s\n", mcmc_args$chains %||% "unknown"))
+  cat(sprintf("Iterations per chain: %s\n", mcmc_args$iter %||% "unknown"))
+  cat(sprintf("Warmup per chain: %s\n", mcmc_args$warmup %||% "unknown"))
+  cat(sprintf("Thinning: %s\n", mcmc_args$thin %||% "unknown"))
+  cat(sprintf("Sampled parameters: %d\n", n_sampled))
+  cat("\nPrediction is not implemented for MCMC fits. Use `summary(...)` or `fit$stanfit` for parameter inference.\n")
+
+  invisible(x)
+}
+
+
+#' Summary method for 'disag_model_mmap_mcmc' objects
+#'
+#' @description
+#' Summarizes parameter estimates and MCMC diagnostics from the underlying
+#' \code{stanfit} returned by \code{tmbstan::tmbstan()}.
+#'
+#' @param object A 'disag_model_mmap_mcmc' object.
+#' @param pars Optional parameter names passed to \code{summary.stanfit()}.
+#' @param probs Numeric vector of quantile probabilities.
+#' @param ... Additional arguments passed to \code{summary.stanfit()}.
+#'
+#' @return An object of class 'summary.disag_model_mmap_mcmc'.
+#' @method summary disag_model_mmap_mcmc
+#' @export
+summary.disag_model_mmap_mcmc <- function(object,
+                                          pars = NULL,
+                                          probs = c(0.025, 0.5, 0.975),
+                                          ...) {
+  if (!inherits(object, "disag_model_mmap_mcmc")) {
+    stop("Object must be of class 'disag_model_mmap_mcmc'", call. = FALSE)
+  }
+
+  coef_meta <- tryCatch(object$model_setup$coef_meta, error = function(e) NULL)
+  tv_flag <- isTRUE(tryCatch(object$model_setup$time_varying_betas, error = function(e) FALSE))
+  parameter_summary <- mcmc_parameter_summary_table(
+    stanfit = object$stanfit,
+    coef_meta = coef_meta,
+    time_varying_betas = tv_flag,
+    pars = pars,
+    probs = probs,
+    ...
+  )
+
+  diagnostic_cols <- intersect(c("n_eff", "Rhat"), names(parameter_summary))
+  diagnostics <- if (length(diagnostic_cols)) {
+    parameter_summary[, c("parameter", "original_parameter", diagnostic_cols), drop = FALSE]
+  } else {
+    NULL
+  }
+
+  out <- list(
+    model_info = list(
+      family = object$model_setup$family,
+      link = object$model_setup$link,
+      field = object$model_setup$field,
+      iid = object$model_setup$iid,
+      time_varying_betas = object$model_setup$time_varying_betas,
+      fixed_effect_betas = object$model_setup$fixed_effect_betas
+    ),
+    mcmc_args = object$model_setup$mcmc_args,
+    parameter_summary = parameter_summary,
+    diagnostics = diagnostics,
+    stanfit = object$stanfit
+  )
+  class(out) <- c("summary.disag_model_mmap_mcmc", "list")
+
+  out
+}
+
+
+#' Print method for 'summary.disag_model_mmap_mcmc' objects
+#'
+#' @description
+#' Displays parameter estimates and MCMC diagnostics for an MCMC-fitted
+#' disaggregation model.
+#'
+#' @param x A 'summary.disag_model_mmap_mcmc' object.
+#' @param ... Additional arguments (unused).
+#' @param max_print Maximum number of parameter rows to print.
+#'
+#' @return Invisibly returns the original summary object.
+#' @method print summary.disag_model_mmap_mcmc
+#' @export
+print.summary.disag_model_mmap_mcmc <- function(x, ..., max_print = 30) {
+  if (!inherits(x, "summary.disag_model_mmap_mcmc")) {
+    stop("Object must be of class 'summary.disag_model_mmap_mcmc'", call. = FALSE)
+  }
+
+  cat("Summary of disaggregation model (multi-map) fit with MCMC\n")
+  cat("========================================================\n")
+  cat(sprintf("Family: %s\n", x$model_info$family))
+  cat(sprintf("Link function: %s\n", x$model_info$link))
+  cat(sprintf("Spatial field included: %s\n", ifelse(x$model_info$field, "Yes", "No")))
+  cat(sprintf("IID effects included: %s\n", ifelse(x$model_info$iid, "Yes", "No")))
+  cat(sprintf("Betas as fixed effects: %s\n", ifelse(x$model_info$fixed_effect_betas, "Yes", "No")))
+  cat(sprintf("Laplace approximation: %s\n", ifelse(isTRUE(x$mcmc_args$laplace), "Yes", "No")))
+  cat(sprintf("Chains: %s\n", x$mcmc_args$chains %||% "unknown"))
+  cat(sprintf("Iterations per chain: %s\n", x$mcmc_args$iter %||% "unknown"))
+  cat(sprintf("Warmup per chain: %s\n", x$mcmc_args$warmup %||% "unknown"))
+
+  if (!is.null(x$parameter_summary) && nrow(x$parameter_summary) > 0L) {
+    cat("\nParameter estimates and diagnostics:\n")
+    cat("------------------------------------\n")
+    n_print <- min(nrow(x$parameter_summary), max_print)
+    print(utils::head(x$parameter_summary, n_print), row.names = FALSE)
+    if (nrow(x$parameter_summary) > max_print) {
+      cat(sprintf("\nShowing %d of %d rows. Increase `max_print` to print more.\n",
+                  max_print, nrow(x$parameter_summary)))
+    }
+  } else {
+    cat("\nNo MCMC summary information available.\n")
+  }
+
+  invisible(x)
+}
+
+
+mcmc_parameter_summary_table <- function(stanfit,
+                                         coef_meta,
+                                         time_varying_betas,
+                                         pars = NULL,
+                                         probs = c(0.025, 0.5, 0.975),
+                                         ...) {
+  stan_summary <- mcmc_stan_summary_matrix(
+    stanfit = stanfit,
+    pars = pars,
+    probs = probs,
+    ...
+  )
+
+  raw_names <- rownames(stan_summary)
+  if (is.null(raw_names)) {
+    raw_names <- rep("", nrow(stan_summary))
+  }
+
+  parameter_names <- if (is.null(coef_meta)) {
+    raw_names
+  } else {
+    canonicalize_draw_names(raw_names, coef_meta, time_varying_betas)
+  }
+
+  out <- data.frame(
+    parameter = parameter_names,
+    original_parameter = raw_names,
+    as.data.frame(stan_summary, check.names = FALSE),
+    row.names = NULL,
+    check.names = FALSE
+  )
+  out[out$original_parameter != "lp__", , drop = FALSE]
+}
+
+
+mcmc_stan_summary_matrix <- function(stanfit,
+                                     pars = NULL,
+                                     probs = c(0.025, 0.5, 0.975),
+                                     ...) {
+  summary_args <- c(
+    list(object = stanfit, probs = probs),
+    if (is.null(pars)) list() else list(pars = pars),
+    list(...)
+  )
+
+  stan_summary <- NULL
+  if (inherits(stanfit, "stanfit") && requireNamespace("rstan", quietly = TRUE)) {
+    stan_summary <- do.call(getExportedValue("rstan", "summary"), summary_args)
+  }
+
+  if (is.null(stan_summary)) {
+    stan_summary <- do.call(base::summary, summary_args)
+  }
+
+  if (is.list(stan_summary) && !is.null(stan_summary$summary)) {
+    stan_summary <- stan_summary$summary
+  }
+
+  if (!(is.matrix(stan_summary) || is.data.frame(stan_summary))) {
+    stop("Could not extract a parameter summary table from the MCMC `stanfit` object.",
+         call. = FALSE)
+  }
+
+  stan_summary
+}
+
+
+`%||%` <- function(x, y) {
+  if (is.null(x)) y else x
+}

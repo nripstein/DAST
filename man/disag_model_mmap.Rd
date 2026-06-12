@@ -2,14 +2,14 @@
 % Please edit documentation in R/fitting.R
 \name{disag_model_mmap}
 \alias{disag_model_mmap}
-\title{Fit a multi-map disaggregation model (via AGHQ or TMB)}
+\title{Fit a multi-map disaggregation model (via AGHQ, TMB, or MCMC)}
 \usage{
 disag_model_mmap(
   data,
   priors = NULL,
   family = "poisson",
   link = "log",
-  engine = c("AGHQ", "TMB"),
+  engine = c("AGHQ", "TMB", "MCMC"),
   time_varying_betas = FALSE,
   fixed_effect_betas = TRUE,
   engine.args = NULL,
@@ -32,7 +32,8 @@ disag_model_mmap(
 
 \item{link}{One of \code{"identity"}, \code{"logit"}, or \code{"log"}.}
 
-\item{engine}{Character; either \code{"AGHQ"} or \code{"TMB"}.}
+\item{engine}{Character; one of \code{"AGHQ"}, \code{"TMB"}, or
+\code{"MCMC"}. The MCMC engine uses \pkg{tmbstan}.}
 
 \item{time_varying_betas}{Logical; if TRUE, each time point has its own fixed-effect.}
 
@@ -49,7 +50,13 @@ Supported AGHQ keys are \code{aghq_k}, \code{optimizer}, and
 \code{outer_derivative_method} may be \code{"tmb"} (default) or
 \code{"finite_difference"}. The finite-difference option affects only the
 outer fixed/hyperparameter optimization and Hessian; TMB still handles the
-inner Laplace approximation.}
+inner Laplace approximation.
+Supported MCMC keys are \code{chains}, \code{iter}, \code{warmup},
+\code{thin}, \code{cores}, \code{seed}, \code{refresh}, \code{laplace},
+\code{lower}, \code{upper}, and \code{control}. Additional named MCMC keys
+are passed through to \code{tmbstan::tmbstan()} and
+\code{rstan::sampling()}. \code{iter} is the total number of Stan
+iterations, including warmup.}
 
 \item{aghq_k}{Deprecated at wrapper level; use \code{engine.args = list(aghq_k = ...)}.
 Retained for backward compatibility.}
@@ -71,8 +78,9 @@ Retained for backward compatibility.}
 are deprecated in this wrapper and should be moved to \code{engine.args}.}
 }
 \value{
-A fitted model object of class \code{disag_model_mmap_tmb} or
-  \code{disag_model_mmap_aghq} (both also inherit \code{disag_model_mmap}).
+A fitted model object of class \code{disag_model_mmap_tmb},
+  \code{disag_model_mmap_aghq}, or \code{disag_model_mmap_mcmc} (all also
+  inherit \code{disag_model_mmap}).
 }
 \description{
 Top-level fitting wrapper with engine dispatch and engine-specific argument
