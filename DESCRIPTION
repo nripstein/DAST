@@ -1,6 +1,6 @@
 Package: DAST
 Type: Package
-Title: Spatio-Temporal Disaggregation For Maps With Changing Boundaries
+Title: Spatio-Temporal Disaggregation for Maps with Changing Boundaries
 Version: 0.1.0
 Authors@R: c(
     person(

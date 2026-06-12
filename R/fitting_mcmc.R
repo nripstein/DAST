@@ -369,7 +369,7 @@ build_mcmc_parameter_metadata <- function(obj,
 }
 
 extract_mcmc_stan_parameter_names <- function(stanfit) {
-  out <- tryCatch(methods::slot(stanfit, "sim")$fnames_oi, error = function(e) NULL)
+  out <- tryCatch(stanfit@sim$fnames_oi, error = function(e) NULL)
   if (is.null(out)) {
     out <- tryCatch(rownames(mcmc_stan_summary_matrix(stanfit)), error = function(e) NULL)
   }
