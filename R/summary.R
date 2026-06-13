@@ -631,6 +631,13 @@ mcmc_stan_summary_matrix <- function(stanfit,
   )
 
   stan_summary <- NULL
+  if (is.matrix(stanfit) || is.data.frame(stanfit)) {
+    stan_summary <- stanfit
+  } else if (is.list(stanfit) && !is.null(stanfit$summary) &&
+             (is.matrix(stanfit$summary) || is.data.frame(stanfit$summary))) {
+    stan_summary <- stanfit$summary
+  }
+
   if (inherits(stanfit, "stanfit") && requireNamespace("rstan", quietly = TRUE)) {
     stan_summary <- do.call(getExportedValue("rstan", "summary"), summary_args)
   }
