@@ -1,4 +1,4 @@
-# Fit a multi-map disaggregation model (via AGHQ or TMB)
+# Fit a multi-map disaggregation model (via AGHQ, TMB, or MCMC)
 
 Top-level fitting wrapper with engine dispatch and engine-specific
 argument handling. Engine-specific controls should be supplied via
@@ -12,7 +12,7 @@ disag_model_mmap(
   priors = NULL,
   family = "poisson",
   link = "log",
-  engine = c("AGHQ", "TMB"),
+  engine = c("AGHQ", "TMB", "MCMC"),
   time_varying_betas = FALSE,
   fixed_effect_betas = TRUE,
   engine.args = NULL,
@@ -47,7 +47,8 @@ disag_model_mmap(
 
 - engine:
 
-  Character; either `"AGHQ"` or `"TMB"`.
+  Character; one of `"AGHQ"`, `"TMB"`, or `"MCMC"`. The MCMC engine uses
+  tmbstan.
 
 - time_varying_betas:
 
@@ -62,11 +63,21 @@ disag_model_mmap(
 
 - engine.args:
 
-  Optional named list of engine-specific options. Supported keys:
-
-  - AGHQ: `aghq_k`, `optimizer`
-
-  - TMB: `iterations`, `hess_control_parscale`, `hess_control_ndeps`
+  Optional named list of engine-specific options. Supported AGHQ keys
+  are `aghq_k`, `optimizer`, and `outer_derivative_method`. Supported
+  TMB keys are `iterations`, `hess_control_parscale`,
+  `hess_control_ndeps`, and `outer_derivative_method`.
+  `outer_derivative_method` may be `"tmb"` (default) or
+  `"finite_difference"`. The finite-difference option affects only the
+  outer fixed/hyperparameter optimization and Hessian; TMB still handles
+  the inner Laplace approximation. Supported MCMC keys are `chains`,
+  `iter`, `warmup`, `thin`, `cores`, `seed`, `refresh`, `laplace`,
+  `lower`, `upper`, and `control`. Additional named MCMC keys are passed
+  through to
+  [`tmbstan::tmbstan()`](https://rdrr.io/pkg/tmbstan/man/tmbstan.html)
+  and
+  [`rstan::sampling()`](https://mc-stan.org/rstan/reference/stanmodel-method-sampling.html).
+  `iter` is the total number of Stan iterations, including warmup.
 
 - aghq_k:
 
@@ -106,5 +117,6 @@ disag_model_mmap(
 
 ## Value
 
-A fitted model object of class `disag_model_mmap_tmb` or
-`disag_model_mmap_aghq` (both also inherit `disag_model_mmap`).
+A fitted model object of class `disag_model_mmap_tmb`,
+`disag_model_mmap_aghq`, or `disag_model_mmap_mcmc` (all also inherit
+`disag_model_mmap`).

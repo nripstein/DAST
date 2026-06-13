@@ -7,6 +7,7 @@ coverage](https://codecov.io/gh/nripstein/DAST/graph/badge.svg)](https://app.cod
 You can install from Github with:
 
 ``` r
+
 # install.packages("remotes")
 remotes::install_github("nripstein/DAST")
 ```
@@ -14,12 +15,14 @@ remotes::install_github("nripstein/DAST")
 or the development branch from
 
 ``` r
+
 remotes::install_github("nripstein/DAST", ref = "development")
 ```
 
 ## Current Workflow
 
 ``` r
+
 # 1) Prepare multi-time data
 dat <- prepare_data_mmap(
   polygon_shapefile_list = polygon_list,
@@ -27,7 +30,7 @@ dat <- prepare_data_mmap(
   aggregation_rasters_list = agg_list
 )
 
-# 2) Fit model (TMB or AGHQ)
+# 2) Fit model (TMB, AGHQ, or MCMC)
 fit <- disag_model_mmap(dat, engine = "AGHQ")
 
 # 3) Predict
@@ -40,6 +43,7 @@ Use `engine.args` as the preferred interface for engine-specific
 controls.
 
 ``` r
+
 # AGHQ controls
 fit_aghq <- disag_model_mmap(
   dat,
@@ -59,4 +63,16 @@ fit_tmb <- disag_model_mmap(
     hess_control_ndeps = 1e-4
   )
 )
+
+# MCMC controls via tmbstan
+fit_mcmc <- disag_model_mmap(
+  dat,
+  engine = "MCMC",
+  engine.args = list(
+    chains = 4,
+    iter = 2000,
+    warmup = 1000
+  )
+)
+summary(fit_mcmc)
 ```

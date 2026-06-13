@@ -3,9 +3,11 @@
 ## All functions
 
 - [`disag_model_mmap()`](http://noahripstein.com/DAST/reference/disag_model_mmap.md)
-  : Fit a multi-map disaggregation model (via AGHQ or TMB)
+  : Fit a multi-map disaggregation model (via AGHQ, TMB, or MCMC)
 - [`disag_model_mmap_aghq()`](http://noahripstein.com/DAST/reference/disag_model_mmap_aghq.md)
   : Fit a multi-map disaggregation model via TMB + AGHQ
+- [`disag_model_mmap_mcmc()`](http://noahripstein.com/DAST/reference/disag_model_mmap_mcmc.md)
+  : Fit a multi-map disaggregation model via tmbstan MCMC
 - [`disag_model_mmap_tmb()`](http://noahripstein.com/DAST/reference/disag_model_mmap_tmb.md)
   : Fit a multi-map disaggregation model via TMB
 - [`dummy()`](http://noahripstein.com/DAST/reference/dummy.md) : Roxygen
@@ -27,6 +29,8 @@
 - [`predict(`*`<disag_model_mmap_aghq>`*`)`](http://noahripstein.com/DAST/reference/predict.disag_model_mmap_aghq.md)
   : Predict mean & credible intervals for AGHQ-fitted disaggregation
   model
+- [`predict(`*`<disag_model_mmap_mcmc>`*`)`](http://noahripstein.com/DAST/reference/predict.disag_model_mmap_mcmc.md)
+  : Prediction guard for MCMC-fitted multi-map disaggregation models
 - [`predict(`*`<disag_model_mmap_tmb>`*`)`](http://noahripstein.com/DAST/reference/predict.disag_model_mmap_tmb.md)
   : Predict for Multi-Map Disaggregation Model fit with TMB
 - [`prepare_data_mmap()`](http://noahripstein.com/DAST/reference/prepare_data_mmap.md)
@@ -35,10 +39,16 @@
   : Print method for 'disag_data_mmap' objects
 - [`print(`*`<disag_model_mmap_aghq>`*`)`](http://noahripstein.com/DAST/reference/print.disag_model_mmap_aghq.md)
   : Print method for 'disag_model_mmap_aghq' objects
+- [`print(`*`<disag_model_mmap_mcmc>`*`)`](http://noahripstein.com/DAST/reference/print.disag_model_mmap_mcmc.md)
+  : Print method for 'disag_model_mmap_mcmc' objects
 - [`print(`*`<summary.disag_model_mmap_aghq>`*`)`](http://noahripstein.com/DAST/reference/print.summary.disag_model_mmap_aghq.md)
   : Print method for 'summary.disag_model_mmap_aghq' objects (direct
   approach)
+- [`print(`*`<summary.disag_model_mmap_mcmc>`*`)`](http://noahripstein.com/DAST/reference/print.summary.disag_model_mmap_mcmc.md)
+  : Print method for 'summary.disag_model_mmap_mcmc' objects
 - [`summary(`*`<disag_data_mmap>`*`)`](http://noahripstein.com/DAST/reference/summary.disag_data_mmap.md)
   : Summary function for disag_data_mmap objects
 - [`summary(`*`<disag_model_mmap_aghq>`*`)`](http://noahripstein.com/DAST/reference/summary.disag_model_mmap_aghq.md)
   : Summary method for 'disag_model_mmap_aghq' objects (direct approach)
+- [`summary(`*`<disag_model_mmap_mcmc>`*`)`](http://noahripstein.com/DAST/reference/summary.disag_model_mmap_mcmc.md)
+  : Summary method for 'disag_model_mmap_mcmc' objects

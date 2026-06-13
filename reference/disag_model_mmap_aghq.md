@@ -19,6 +19,7 @@ disag_model_mmap_aghq(
   silent = TRUE,
   starting_values = NULL,
   optimizer = NULL,
+  outer_derivative_method = "tmb",
   verbose = FALSE
 )
 ```
@@ -73,6 +74,14 @@ disag_model_mmap_aghq(
 - optimizer:
 
   Optional optimizer name passed to AGHQ control.
+
+- outer_derivative_method:
+
+  Character; `"tmb"` (default) uses TMB's analytic outer gradient and
+  `"finite_difference"` uses finite differences of `obj$fn` for outer
+  optimization and Hessian construction. The finite-difference option is
+  only supported with `optimizer = "nlminb"`. The inner Laplace
+  approximation is still handled by TMB.
 
 - verbose:
 
