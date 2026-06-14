@@ -6,9 +6,19 @@
 ^pkgdown$
 ^\.github$
 ^\.claude$
-^DAST\.Rcheck$
+^\.claude/.*$
+^\.DS_Store$
+^.*\/\.DS_Store$
+^\.Rhistory$
+^.*\.Rcheck$
 ^\.\.Rcheck$
-^DAST_[0-9.]+\.tar\.gz$
+^.*\.tar\.gz$
+^.*\.tgz$
+^.*\.zip$
+^pkg-.*\.log$
 ^good draft setup vis$
+^good draft setup vis/.*$
 ^setup_vis\.R$
 ^figures$
+^figures/.*$
+^src/.*\.(o|so)$
