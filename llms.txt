@@ -4,7 +4,7 @@ coverage](https://codecov.io/gh/nripstein/DAST/graph/badge.svg)](https://app.cod
 
 ## Installation
 
-You can install from Github with:
+You can install from GitHub with:
 
 ``` r
 
