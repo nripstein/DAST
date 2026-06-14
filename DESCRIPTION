@@ -12,13 +12,13 @@ Authors@R: c(
 Description: Provides tools for spatio-temporal disaggregation of areal data across multiple 
     time points, including support for changing polygon boundaries. Combines polygon-level 
     observations, population rasters and optional covariate rasters to infer fine-scale 
-    spatial fields over time. Models can be efficiently fit using TMB (template model 
-    builder) and adaptive Gauss-Hermite quadrature for fast approximate inference
-    or via tmbstan for MCMC.
+    spatial fields over time. Models can be efficiently fit using 'TMB' (Template Model 
+    Builder) and adaptive Gauss-Hermite quadrature for fast approximate inference
+    or via 'tmbstan' for MCMC.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-URL: https://github.com/nripstein/DAST, http://noahripstein.com/DAST/
+URL: https://github.com/nripstein/DAST
 LinkingTo: TMB, RcppEigen
 Imports:
     aghq,
