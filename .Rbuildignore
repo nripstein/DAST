@@ -16,6 +16,7 @@
 ^.*\.tgz$
 ^.*\.zip$
 ^pkg-.*\.log$
+^cran-comments\.md$
 ^good draft setup vis$
 ^good draft setup vis/.*$
 ^setup_vis\.R$

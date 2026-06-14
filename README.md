@@ -4,7 +4,7 @@
 
 ## Installation
 
-You can install from Github with:
+You can install from GitHub with:
 
 ``` r
 # install.packages("remotes")
