@@ -18,8 +18,8 @@ knitr::opts_chunk$set(
 )
 ```
 
-This vignette builds a small synthetic example for the multiple-map setting.
-Two sets of administrative regions cover the same unit-square domain, but the
+This vignette builds a small synthetic example of how to use the `DAST` package.
+Two sets of hypothetical administrative regions cover the same domain, but the
 boundaries differ. We simulate time-varying fine-scale population offsets and
 counts, aggregate those counts to each map, and then use `DAST` to infer a
 fine-scale risk surface from the two areal observations.
@@ -33,10 +33,8 @@ library(terra)
 sf::sf_use_s2(FALSE)
 ```
 
-## Construct schematic maps
+## Construct simulated maps
 
-The two maps below reuse the geometry from the schematic figure. Map 1 has four
-rectangular regions. Map 2 redraws the boundaries into five regions.
 
 ```{r map-helpers}
 make_rect <- function(xmin, ymin, xmax, ymax) {
@@ -256,16 +254,12 @@ coarse and uses one quadrature point so the vignette remains lightweight.
 ```{r fit}
 fit <- disag_model_mmap(
   schematic_data,
-  engine = "AGHQ",
   family = "negbinomial",
-  link = "log",
-  field = TRUE,
-  iid = FALSE,
-  engine.args = list(aghq_k = 1, optimizer = "nlminb"),
-  silent = TRUE
+  engine = "AGHQ",
+  engine.args = list(aghq_k = 1, optimizer = "nlminb")
 )
 
-fit
+summary(fit)
 ```
 
 ## Predict on the fine grid
@@ -277,7 +271,6 @@ visualize expected fine-cell counts.
 
 ```{r predict}
 pred <- predict(fit, N = 10)
-pred
 ```
 
 ```{r predictions}
@@ -293,6 +286,6 @@ cowplot::plot_grid(
 )
 ```
 
-This toy example is intentionally small, but it shows the main contract:
+This toy example is intentionally small, but it shows the main structure:
 multiple areal maps, a population offset raster, optional covariates, model
 fitting, and fine-grid prediction all pass through the same multi-map interface.
