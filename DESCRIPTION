@@ -1,6 +1,6 @@
 Package: DAST
 Type: Package
-Title: Spatio-Temporal Disaggregation for Maps with Changing Boundaries
+Title: Spatio-Temporal Disaggregation for Maps with Changing Areal Boundaries
 Version: 0.1.0
 Authors@R: c(
     person(
@@ -9,7 +9,7 @@ Authors@R: c(
       role = c("aut", "cre")
     )
   )
-Description: Provides tools for spatio-temporal disaggregation of areal data across multiple 
+Description: Tools for spatio-temporal disaggregation of areal data across multiple 
     time points, including support for changing polygon boundaries. Combines polygon-level 
     observations, population rasters and optional covariate rasters to infer fine-scale 
     spatial fields over time. Models can be efficiently fit using 'TMB' (Template Model 
