@@ -13,8 +13,10 @@
   timestamps. This appears to be specific to the local checking environment.
 
 * The local check reported HTML validation notes for the generated HTML manual
-  (for example, `<main>` not being recognized by the validator). The Rd checks
-  and PDF manual checks pass.
-  
-  * The words "spatio" and "disaggregation" are domain-specific terms used in
-spatial statistics and small area estimation.
+  (for example, `<main>` not being recognized by the validator). These messages
+  appear to come from R's generated help-page HTML rather than package-authored
+  HTML in the Rd sources or vignette. The Rd checks, PDF manual check, and
+  non-ASCII source checks pass.
+
+* The words "spatio" and "disaggregation" are domain-specific terms used in
+  spatial statistics and small area estimation.
