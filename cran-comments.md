@@ -15,3 +15,6 @@
 * The local check reported HTML validation notes for the generated HTML manual
   (for example, `<main>` not being recognized by the validator). The Rd checks
   and PDF manual checks pass.
+  
+  * The words "spatio" and "disaggregation" are domain-specific terms used in
+spatial statistics and small area estimation.
