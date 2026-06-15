@@ -2,7 +2,6 @@
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
 on:
   push:
-    branches: [main, master]
   pull_request:
 
 name: test-coverage.yaml
@@ -14,8 +13,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-      RUN_TMB_INTEGRATION_TESTS: false
-      RUN_AGHQ_TESTS: false
+      NOT_CRAN: true
+      RUN_TMB_INTEGRATION_TESTS: true
+      RUN_AGHQ_TESTS: true
       RUN_MCMC_TESTS: false
 
     steps:
