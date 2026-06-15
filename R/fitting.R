@@ -624,7 +624,7 @@ make_model_object_mmap <- function(data,
     names(default_parameters$slope) <- colnames(cov_matrix)  # or cov_cols
   }
 
-  # Time-varying (time-major order: all p covariates for t=1, then t=2, …)
+  # Time-varying (time-major order: all p covariates for t=1, then t=2, ...)
   if (n_times > 0L) {
     names(default_parameters$intercept_t) <- paste0("intercept_t", seq_len(n_times))
   }
@@ -695,7 +695,7 @@ make_model_object_mmap <- function(data,
       iideffect         = factor(rep(NA, nrow(data$polygon_data)))
     ))
   }
-  if (family_id != 0) { # non‐Gaussian
+  if (family_id != 0) { # non-Gaussian
     tmb_map <- c(tmb_map, list(log_tau_gaussian = factor(NA)))
   }
   # if (!has_covariates) {
@@ -717,7 +717,7 @@ make_model_object_mmap <- function(data,
   #-- 11. Identify random effects --
   random_effects <- character(0)
   if (field) random_effects <- c(random_effects, "nodemean")
-  if (iid && family_id != 3) { # include polygon-specific random‐effect vector when iid and not NB
+  if (iid && family_id != 3) { # include polygon-specific random-effect vector when iid and not NB
     random_effects <- c(random_effects, "iideffect")
   }
   if (!isTRUE(fixed_effect_betas)) {

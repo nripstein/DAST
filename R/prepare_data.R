@@ -15,7 +15,7 @@
 #' @param make_mesh Logical; if TRUE, build the spatial mesh over all polygons.
 #' @param verbose Logical; if TRUE, print timing info.
 #' @return An object of class 'disag_data_mmap' with components including
-#'   - 'polygon_data', 'covariate_data', 'aggregation_pixels', …
+#'   - 'polygon_data', 'covariate_data', 'aggregation_pixels', ...
 #'   - 'categorical_covariate_baselines' (normalized baseline labels)
 #'   - 'categorical_covariate_schema' (internal encoding schema used for fit/predict consistency)
 #' @export
@@ -320,7 +320,7 @@ prepare_time_point <- function(t,
 
   #-- 3. Build or validate aggregation raster --
   if (is.null(agg_raster)) {
-    # No user‐provided aggregation → uniform weights from first covariate
+    # No user-provided aggregation -> uniform weights from first covariate
     if (is.null(cov_rasters)) {
       stop("Time ", t, ": no aggregation raster and no covariates to derive one.")
     }

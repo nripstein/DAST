@@ -104,7 +104,7 @@ disag_model_mmap_aghq <- function(data,
       warning("nlminb optimizer did not converge (code ", opt$convergence, "): ", opt$message)
     }
 
-    # Hessian of obj$fn (neg-log-posterior) at mode — positive definite.
+    # Hessian of obj$fn (neg-log-posterior) at mode -- positive definite.
     # Uses Richardson extrapolation on obj$gr, matching the fork's approach.
     if (identical(outer_derivative_method, "finite_difference")) {
       hess <- numDeriv::hessian(obj$fn, opt$par, method = "Richardson")

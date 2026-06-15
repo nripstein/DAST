@@ -370,11 +370,11 @@ plot_mesh <- function(disag_data,
 #'
 #' @description
 #' Combines polygons, aggregation raster, mesh, and (if present) a covariate
-#' into a 2×2 grid.
+#' into a 2x2 grid.
 #'
 #' @param disag_data A `disag_data_mmap` object.
 #' @param covariate Integer or name of the covariate to display (default = 1).
-#' @param time Integer time‐slice (default = 1).
+#' @param time Integer time-slice (default = 1).
 #' @param max_categories Maximum number of unique values to consider categorical (default = 10).
 #' @return A ggdraw object (from cowplot) which can be printed.
 #' @keywords internal
@@ -390,7 +390,7 @@ plot_prepare_summary <- function(disag_data,
   # 1) Prepare the three core panels
   p1 <- plot_polygons(disag_data, time = time, show_title = FALSE)
   p2 <- plot_aggregation_raster(disag_data, time = time)
-  p4 <- plot_mesh(disag_data) # mesh bottom‐left
+  p4 <- plot_mesh(disag_data) # mesh bottom-left
 
   # 2) Decide if we have a covariate to show
   cov_list <- disag_data$covariate_rasters_list
@@ -421,7 +421,7 @@ plot_prepare_summary <- function(disag_data,
           )
       }
 
-      # 2×2: p1 p2 / p4 p3
+      # 2x2: p1 p2 / p4 p3
       grid <- cowplot::plot_grid(
         p1, p2,
         p4, p3,
@@ -482,12 +482,12 @@ plot_prepare_summary <- function(disag_data,
 #'
 #' @description
 #' Combines polygons, aggregation raster, mesh, and (if present) a covariate
-#' into a 2×2 grid.
+#' into a 2x2 grid.
 #'
 #' @param x A `disag_data_mmap` object.
 #' @param y Not used (required for S3 method compatibility).
 #' @param covariate Integer or name of the covariate to display (default = 1).
-#' @param time Integer time‐slice (default = 1).
+#' @param time Integer time-slice (default = 1).
 #' @param max_categories Maximum number of unique values to consider categorical (default = 10).
 #' @param ... Additional arguments passed to plot_prepare_summary.
 #' @return A ggdraw object (from cowplot) which can be printed.

@@ -104,7 +104,7 @@ predict.disag_model_mmap_tmb <- function(object, new_data = NULL,
 #'
 #' @description
 #' Given a fitted TMB model object and optional new covariate data,
-#' compute the mean‐only prediction (no uncertainty) for one raster.
+#' compute the mean-only prediction (no uncertainty) for one raster.
 #'
 #' @param model_output A 'disag_model_mmap_tmb' model fit.
 #' @param new_data Optional SpatRaster (or list) of new covariates.
@@ -144,7 +144,7 @@ predict_model_mmap <- function(model_output, new_data = NULL, predict_iid = FALS
 #' @param new_data Optional SpatRaster (or list) of new covariates.
 #' @param predict_iid Logical; if TRUE, include the IID polygon effect.
 #' @param N Integer; number of Monte Carlo draws (default 100).
-#' @param CI Numeric in (0,1); credible‐interval level (default 0.95).
+#' @param CI Numeric in (0,1); credible-interval level (default 0.95).
 #' @return A list with components:
 #'   - realisations: list of SpatRasters of each draw.
 #'   - predictions_ci: list with 'lower' and 'upper' SpatRaster stacks.
@@ -218,7 +218,7 @@ predict_uncertainty_mmap <- function(model_output, new_data = NULL,
 #'
 #' @description
 #' Constructs the covariate rasters, field projector, and IID shapefile
-#' objects needed by the single‐raster prediction routines.
+#' objects needed by the single-raster prediction routines.
 #'
 #' @param model_output A 'disag_model_mmap_tmb' model fit.
 #' @param new_data Optional SpatRaster (or list) of new covariates.

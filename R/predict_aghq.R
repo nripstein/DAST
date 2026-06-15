@@ -10,8 +10,8 @@
 #'   - a single 'SpatRaster' (recycled across all times), or
 #'   - a list of length 'length(data$time_points)' of 'SpatRaster' objects.
 #' @return A list with elements:
-#'   - 'X_list': list of design matrices (each n_cells × p, with "Intercept").
-#'   - 'A': SPDE projection matrix (n_cells × n_knots).
+#'   - 'X_list': list of design matrices (each n_cells x p, with "Intercept").
+#'   - 'A': SPDE projection matrix (n_cells x n_knots).
 #'   - 'coords': data.frame of x/y coordinates for each cell.
 #' @keywords internal
 #' @param expected_cov_names Character vector of training covariate names (order matters).
@@ -27,7 +27,7 @@ get_predict_matrices <- function(data,
   n_times <- length(data$time_points)
 
   #-- Build covariate list --
-  # If the user didn’t supply new_data, use the original rasters.
+  # If the user didn't supply new_data, use the original rasters.
   # Otherwise accept a single SpatRaster (recycled) or a list matching time points.
   training_rasters <- is.null(new_data)
   cov_list <- if (training_rasters) {
@@ -74,7 +74,7 @@ get_predict_matrices <- function(data,
 
     # Intercept-only model (no covariates in training): ignore provided covariates
     if (length(expected_cov_names) == 0L || is.null(cov_i)) {
-      # No covariates → intercept-only design: column of 1’s
+      # No covariates -> intercept-only design: column of 1's
       X_list[[i]] <- matrix(
         1,
         nrow = nrow(Amatrix),
@@ -301,10 +301,10 @@ predict.disag_model_mmap_aghq <- function(object,
         " draw rows. Refit the model with a compatible version."
       )
     }
-    W_beta <- beta_draws[rows_t, , drop = FALSE] # ((1+p) × N)
+    W_beta <- beta_draws[rows_t, , drop = FALSE] # ((1+p) x N)
 
     # 3. Compute linear predictors (covariates + optional field at mode)
-    lin_cov <- X %*% W_beta # (n_cells × N)
+    lin_cov <- X %*% W_beta # (n_cells x N)
     if (!is.null(field_vec)) {
       lin_cov <- sweep(lin_cov, 1, field_vec, `+`)
     }

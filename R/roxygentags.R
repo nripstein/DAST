@@ -1,6 +1,8 @@
 #' Roxygen commands
 #'
 #' @useDynLib DAST
+#' @keywords internal
+#' @noRd
 #'
 dummy <- function() {
   return(NULL)
