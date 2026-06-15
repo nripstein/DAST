@@ -20,6 +20,9 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      RUN_TMB_INTEGRATION_TESTS: false
+      RUN_AGHQ_TESTS: false
+      RUN_MCMC_TESTS: false
 
     steps:
       - uses: actions/checkout@v4

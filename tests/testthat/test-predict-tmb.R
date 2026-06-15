@@ -1,4 +1,5 @@
 test_that("predict.disag_model_mmap_tmb returns expected structure", {
+  skip_tmb_integration()
   bundle <- get_core_field_fit()
   fit <- bundle$fit
   n_times <- length(fit$data$time_points)
@@ -33,6 +34,7 @@ test_that("predict.disag_model_mmap_tmb returns expected structure", {
 })
 
 test_that("predict.disag_model_mmap_tmb handles no-field/no-iid model", {
+  skip_tmb_integration()
   bundle <- suppressWarnings(get_core_nofield_fit())
   fit <- bundle$fit
   n_times <- length(fit$data$time_points)
@@ -54,6 +56,7 @@ test_that("predict.disag_model_mmap_tmb handles no-field/no-iid model", {
 })
 
 test_that("predict.disag_model_mmap_tmb works with shared random-betas mode", {
+  skip_tmb_integration()
   bundle <- suppressWarnings(get_cached_tmb_fit(
     name = "pred_shared_random_betas",
     seed = 14L,
@@ -78,6 +81,7 @@ test_that("predict.disag_model_mmap_tmb works with shared random-betas mode", {
 })
 
 test_that("predict.disag_model_mmap_tmb works with field + shared random-betas mode", {
+  skip_tmb_integration()
   bundle <- suppressWarnings(get_cached_tmb_fit(
     name = "pred_shared_random_betas_field",
     seed = 17L,
@@ -104,6 +108,7 @@ test_that("predict.disag_model_mmap_tmb works with field + shared random-betas m
 })
 
 test_that("predict.disag_model_mmap_tmb works with time-varying random-betas mode", {
+  skip_tmb_integration()
   bundle <- suppressWarnings(get_cached_tmb_fit(
     name = "pred_tv_random_betas",
     seed = 15L,
@@ -128,6 +133,7 @@ test_that("predict.disag_model_mmap_tmb works with time-varying random-betas mod
 })
 
 test_that("predict.disag_model_mmap_tmb uses single-raster new_data in mean and uncertainty paths", {
+  skip_tmb_integration()
   bundle <- suppressWarnings(get_cached_tmb_fit(
     name = "pred_new_data_single",
     seed = 31L,
@@ -163,6 +169,7 @@ test_that("predict.disag_model_mmap_tmb uses single-raster new_data in mean and 
 })
 
 test_that("predict.disag_model_mmap_tmb supports per-time new_data lists", {
+  skip_tmb_integration()
   bundle <- suppressWarnings(get_cached_tmb_fit(
     name = "pred_new_data_list",
     seed = 33L,
@@ -200,6 +207,7 @@ test_that("predict.disag_model_mmap_tmb supports per-time new_data lists", {
 })
 
 test_that("predict.disag_model_mmap_tmb validates new_data covariate names and counts", {
+  skip_tmb_integration()
   bundle <- suppressWarnings(get_cached_tmb_fit(
     name = "pred_new_data_validation",
     seed = 34L,
@@ -229,6 +237,7 @@ test_that("predict.disag_model_mmap_tmb validates new_data covariate names and c
 })
 
 test_that("predict.disag_model_mmap_tmb reorders new_data layers when names match", {
+  skip_tmb_integration()
   bundle <- suppressWarnings(get_cached_tmb_fit(
     name = "pred_new_data_reorder",
     seed = 35L,
@@ -256,6 +265,7 @@ test_that("predict.disag_model_mmap_tmb reorders new_data layers when names matc
 })
 
 test_that("predict.disag_model_mmap_tmb includes iid predictions when enabled for supported families", {
+  skip_tmb_integration()
   fixture <- make_fixture_fit_tmb(
     seed = 36L,
     n_times = 1,

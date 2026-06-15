@@ -1,12 +1,3 @@
-skip_if_mcmc_opted_out <- function() {
-  skip_on_cran()
-  run_mcmc <- tolower(Sys.getenv("RUN_MCMC_TESTS", "false")) %in% c("1", "true", "yes")
-  skip_if_not(
-    run_mcmc,
-    message = "MCMC integration test is opt-in locally; set RUN_MCMC_TESTS=true to run it."
-  )
-}
-
 make_mcmc_summary_matrix <- function(rows = c("intercept", "slope", "lp__")) {
   mat <- matrix(
     c(
@@ -325,8 +316,8 @@ test_that("MCMC print and summary methods work with fake fits", {
 })
 
 test_that("MCMC engine returns expected fit contract (gated)", {
+  skip_mcmc_integration()
   skip_if_not_installed("tmbstan")
-  skip_if_mcmc_opted_out()
 
   data_obj <- get_cached_aghq_prepared_data("aghq_small_onecov_mesh")
 

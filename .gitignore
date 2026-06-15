@@ -25,6 +25,7 @@
 pkg-*.log
 /src/DAST.o
 /src/DAST.so
+/src/*.o.tmp
 DAST.Rcheck/
 ..Rcheck/
 

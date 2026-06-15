@@ -1,0 +1,60 @@
+on:
+  workflow_dispatch:
+  pull_request:
+  schedule:
+    - cron: '0 8 * * 1'
+
+name: integration-tests
+
+permissions: read-all
+
+jobs:
+  tmb-aghq-integration:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      NOT_CRAN: true
+      RUN_TMB_INTEGRATION_TESTS: true
+      RUN_AGHQ_TESTS: true
+      RUN_MCMC_TESTS: false
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::testthat
+          needs: check
+
+      - name: Run TMB and AGHQ integration tests
+        run: testthat::test_local(reporter = "summary")
+        shell: Rscript {0}
+
+  mcmc-integration:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      NOT_CRAN: true
+      RUN_TMB_INTEGRATION_TESTS: false
+      RUN_AGHQ_TESTS: false
+      RUN_MCMC_TESTS: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::testthat, any::tmbstan, any::rstan
+          needs: check
+
+      - name: Run MCMC integration tests
+        run: testthat::test_local(reporter = "summary")
+        shell: Rscript {0}

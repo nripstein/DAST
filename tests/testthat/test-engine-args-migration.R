@@ -10,104 +10,80 @@ capture_warnings_mmap <- function(expr) {
   list(value = value, warnings = warnings)
 }
 
-skip_if_aghq_opted_out_engine_args <- function() {
-  run_aghq <- !tolower(Sys.getenv("RUN_AGHQ_TESTS", "true")) %in% c("0", "false", "no")
-  skip_if_not(run_aghq, message = "Set RUN_AGHQ_TESTS=false to skip heavy AGHQ tests.")
+resolve_engine_args_for_test <- function(engine,
+                                         engine_args = list(),
+                                         legacy_named_args = list(),
+                                         dot_engine_args = list()) {
+  spec <- DAST:::get_engine_specs_mmap()[[engine]]
+  DAST:::resolve_engine_args_mmap(
+    engine = engine,
+    engine_spec = spec,
+    engine_args = engine_args,
+    legacy_named_args = legacy_named_args,
+    dot_engine_args = dot_engine_args
+  )
 }
 
 test_that("engine.args routes TMB-specific controls", {
-  data_obj <- get_cached_prepared_data("prep_default_mesh")
-
-  fit <- suppressWarnings(
-    suppressMessages(
-      disag_model_mmap(
-        data = data_obj,
-        engine = "TMB",
-        family = "poisson",
-        link = "log",
-        engine.args = list(
-          iterations = 20,
-          hess_control_ndeps = 1e-4
-        ),
-        field = FALSE,
-        iid = FALSE,
-        silent = TRUE
-      )
+  resolved <- resolve_engine_args_for_test(
+    "TMB",
+    engine_args = list(
+      iterations = 20,
+      hess_control_ndeps = 1e-4
     )
   )
+  resolved <- DAST:::validate_engine_specific_values("TMB", resolved)
 
-  expect_s3_class(fit, "disag_model_mmap_tmb")
-  expect_s3_class(fit, "disag_model_mmap")
+  expect_identical(resolved$iterations, 20L)
+  expect_equal(resolved$hess_control_ndeps, 1e-4)
+  expect_equal(resolved$outer_derivative_method, "tmb")
 })
 
 test_that("engine.args routes TMB finite-difference outer derivatives", {
-  data_obj <- get_cached_prepared_data("prep_default_mesh")
-
-  fit <- suppressWarnings(
-    suppressMessages(
-      disag_model_mmap(
-        data = data_obj,
-        engine = "TMB",
-        family = "poisson",
-        link = "log",
-        engine.args = list(
-          iterations = 20,
-          outer_derivative_method = "finite_difference"
-        ),
-        field = FALSE,
-        iid = FALSE,
-        silent = TRUE
-      )
+  resolved <- resolve_engine_args_for_test(
+    "TMB",
+    engine_args = list(
+      iterations = 20,
+      outer_derivative_method = "finite_difference"
     )
   )
+  resolved <- DAST:::validate_engine_specific_values("TMB", resolved)
 
-  expect_s3_class(fit, "disag_model_mmap_tmb")
-  expect_equal(fit$model_setup$outer_derivative_method, "finite_difference")
+  expect_identical(resolved$iterations, 20L)
+  expect_equal(resolved$outer_derivative_method, "finite_difference")
 })
 
 test_that("engine.args unknown keys warn and are ignored", {
-  data_obj <- get_cached_prepared_data("prep_default_mesh")
   out <- capture_warnings_mmap(
-    suppressMessages(
-      disag_model_mmap(
-        data = data_obj,
-        engine = "TMB",
-        family = "poisson",
-        link = "log",
-        engine.args = list(iterations = 20, banana = 123),
-        field = FALSE,
-        iid = FALSE,
-        silent = TRUE
-      )
+    resolve_engine_args_for_test(
+      "TMB",
+      engine_args = list(iterations = 20, banana = 123)
     )
   )
 
   expect_true(any(grepl("Ignoring unknown `engine.args` key", out$warnings)))
-  expect_s3_class(out$value, "disag_model_mmap_tmb")
+  expect_identical(out$value$iterations, 20)
+  expect_false("banana" %in% names(out$value))
 })
 
 test_that("legacy engine-specific args in dots are deprecated but still supported", {
-  data_obj <- get_cached_prepared_data("prep_default_mesh")
-  out <- capture_warnings_mmap(
-    suppressMessages(
-      disag_model_mmap(
-        data = data_obj,
-        engine = "TMB",
-        family = "poisson",
-        link = "log",
-        iterations = 20,
-        field = FALSE,
-        iid = FALSE,
-        silent = TRUE
-      )
-    )
+  resolved <- resolve_engine_args_for_test(
+    "TMB",
+    dot_engine_args = list(iterations = 20)
   )
 
-  expect_true(any(grepl("Engine-specific arguments in `\\.\\.\\.` are deprecated", out$warnings)))
-  expect_s3_class(out$value, "disag_model_mmap_tmb")
+  expect_identical(resolved$iterations, 20)
+  expect_warning(
+    expect_error(
+      disag_model_mmap(data = NULL, engine = "TMB", iterations = 20),
+      "data must be an object of class 'disag_data_mmap'"
+    ),
+    "Engine-specific arguments in `\\.\\.\\.` are deprecated"
+  )
 })
 
 test_that("AGHQ-specific top-level args are warned and ignored under TMB", {
+  skip_tmb_integration()
   data_obj <- get_cached_prepared_data("prep_default_mesh")
   out <- capture_warnings_mmap(
     suppressMessages(
@@ -132,6 +108,7 @@ test_that("AGHQ-specific top-level args are warned and ignored under TMB", {
 })
 
 test_that("fixed_effect_betas FALSE is honored under TMB", {
+  skip_tmb_integration()
   data_obj <- get_cached_prepared_data("prep_default_mesh")
   out <- capture_warnings_mmap(
     suppressMessages(
@@ -248,7 +225,7 @@ test_that("invalid engine-specific values are rejected before fit", {
 })
 
 test_that("AGHQ engine.args are routed and default k in wrapper remains 2 (gated)", {
-  skip_if_aghq_opted_out_engine_args()
+  skip_aghq_integration()
   data_obj <- get_cached_aghq_prepared_data("aghq_small_onecov_mesh")
 
   fit <- suppressWarnings(
@@ -282,7 +259,7 @@ test_that("AGHQ engine.args are routed and default k in wrapper remains 2 (gated
 })
 
 test_that("AGHQ engine.args route finite-difference outer derivatives with nlminb (gated)", {
-  skip_if_aghq_opted_out_engine_args()
+  skip_aghq_integration()
   data_obj <- get_cached_aghq_prepared_data("aghq_small_onecov_mesh")
 
   fit <- suppressWarnings(
@@ -308,7 +285,7 @@ test_that("AGHQ engine.args route finite-difference outer derivatives with nlmin
 })
 
 test_that("legacy AGHQ top-level args are deprecated but still supported (gated)", {
-  skip_if_aghq_opted_out_engine_args()
+  skip_aghq_integration()
   data_obj <- get_cached_aghq_prepared_data("aghq_small_onecov_mesh")
   out <- capture_warnings_mmap(
     suppressMessages(
@@ -332,7 +309,7 @@ test_that("legacy AGHQ top-level args are deprecated but still supported (gated)
 })
 
 test_that("AGHQ helper keeps a legacy fixture path for compatibility checks (gated)", {
-  skip_if_aghq_opted_out_engine_args()
+  skip_aghq_integration()
   out <- capture_warnings_mmap(
     get_cached_aghq_fit("aghq_small_onecov_shared", use_legacy_args = TRUE)
   )
@@ -342,7 +319,7 @@ test_that("AGHQ helper keeps a legacy fixture path for compatibility checks (gat
 })
 
 test_that("engine.args wins in AGHQ conflicts with legacy top-level args (gated)", {
-  skip_if_aghq_opted_out_engine_args()
+  skip_aghq_integration()
   data_obj <- get_cached_aghq_prepared_data("aghq_small_onecov_mesh")
   out <- capture_warnings_mmap(
     suppressMessages(

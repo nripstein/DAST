@@ -38,6 +38,7 @@ test_that("slice_params_tmb honors full beta indices when betas are not leading"
 })
 
 test_that("slice_params_tmb matches beta_index_map for field + random-betas TMB fits", {
+  skip_tmb_integration()
   bundle <- suppressWarnings(get_cached_tmb_fit(
     name = "slice_field_random_betas",
     seed = 24L,

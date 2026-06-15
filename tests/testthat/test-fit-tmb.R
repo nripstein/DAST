@@ -1,25 +1,40 @@
-test_that("disag_model_mmap wrapper dispatches to TMB", {
-  data_obj <- get_cached_prepared_data("prep_default_mesh")
-  family <- get_test_family_mmap()
+test_that("disag_model_mmap wrapper dispatches to TMB with a tiny smoke fit", {
+  fixture <- make_fixture_fit_tmb(
+    seed = 101L,
+    n_times = 1,
+    n_polygon_per_side = 3,
+    n_pixels_per_side = 6
+  )
+  data_obj <- prepare_data_mmap(
+    polygon_shapefile_list = fixture$polygon_shapefile_list,
+    covariate_rasters_list = fixture$covariate_rasters_list,
+    aggregation_rasters_list = fixture$aggregation_rasters_list,
+    make_mesh = TRUE
+  )
 
-  fit <- suppressMessages(
+  fit <- suppressWarnings(suppressMessages(
     disag_model_mmap(
       data = data_obj,
       engine = "TMB",
-      family = family,
+      family = "poisson",
       link = "log",
-      engine.args = list(iterations = 40),
+      engine.args = list(iterations = 3),
       field = FALSE,
       iid = FALSE,
       silent = TRUE
     )
-  )
+  ))
 
   expect_s3_class(fit, "disag_model_mmap_tmb")
   expect_s3_class(fit, "disag_model_mmap")
+  expect_true(all(c("obj", "opt", "sd_out", "data", "model_setup") %in% names(fit)))
+  expect_equal(fit$model_setup$family, "poisson")
+  expect_false(isTRUE(fit$model_setup$field))
+  expect_false(isTRUE(fit$model_setup$iid))
 })
 
 test_that("disag_model_mmap_tmb returns expected object contract", {
+  skip_tmb_integration()
   bundle <- get_core_field_fit()
   fit <- bundle$fit
   family <- get_test_family_mmap()
@@ -39,6 +54,7 @@ test_that("disag_model_mmap_tmb returns expected object contract", {
 })
 
 test_that("disag_model_mmap_tmb supports shared random-betas mode", {
+  skip_tmb_integration()
   bundle <- suppressWarnings(get_cached_tmb_fit(
     name = "fit_shared_random_betas",
     seed = 12L,
@@ -60,6 +76,7 @@ test_that("disag_model_mmap_tmb supports shared random-betas mode", {
 })
 
 test_that("disag_model_mmap_tmb supports time-varying random-betas mode", {
+  skip_tmb_integration()
   bundle <- suppressWarnings(get_cached_tmb_fit(
     name = "fit_tv_random_betas",
     seed = 13L,
@@ -85,6 +102,7 @@ test_that("disag_model_mmap_tmb supports time-varying random-betas mode", {
 })
 
 test_that("disag_model_mmap_tmb keeps model flags for no-field/no-iid setup", {
+  skip_tmb_integration()
   bundle <- suppressWarnings(get_core_nofield_fit())
   fit <- bundle$fit
   family <- get_test_family_mmap()

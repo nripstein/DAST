@@ -14,7 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-      RUN_MCMC_TESTS: true
+      RUN_TMB_INTEGRATION_TESTS: false
+      RUN_AGHQ_TESTS: false
+      RUN_MCMC_TESTS: false
 
     steps:
       - uses: actions/checkout@v4

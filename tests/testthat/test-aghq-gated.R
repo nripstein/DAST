@@ -1,10 +1,5 @@
-skip_if_aghq_opted_out <- function() {
-  run_aghq <- !tolower(Sys.getenv("RUN_AGHQ_TESTS", "true")) %in% c("0", "false", "no")
-  skip_if_not(run_aghq, message = "Set RUN_AGHQ_TESTS=false to skip heavy AGHQ tests.")
-}
-
 test_that("disag_model_mmap AGHQ returns expected fit contract (gated)", {
-  skip_if_aghq_opted_out()
+  skip_aghq_integration()
   bundle <- suppressWarnings(get_cached_aghq_fit("aghq_small_onecov_shared"))
   fit <- bundle$fit
   family <- get_test_family_mmap()
@@ -30,7 +25,7 @@ test_that("disag_model_mmap AGHQ returns expected fit contract (gated)", {
 })
 
 test_that("predict.disag_model_mmap_aghq returns expected structure (gated)", {
-  skip_if_aghq_opted_out()
+  skip_aghq_integration()
   bundle <- suppressWarnings(get_cached_aghq_fit("aghq_small_onecov_shared"))
   fit <- bundle$fit
   n_times <- length(fit$data$time_points)
@@ -70,7 +65,7 @@ test_that("predict.disag_model_mmap_aghq returns expected structure (gated)", {
 })
 
 test_that("predict.disag_model_mmap_aghq validates new_data covariate names (gated)", {
-  skip_if_aghq_opted_out()
+  skip_aghq_integration()
   bundle <- suppressWarnings(get_cached_aghq_fit("aghq_small_onecov_shared"))
   fit <- bundle$fit
 
@@ -87,7 +82,7 @@ test_that("predict.disag_model_mmap_aghq validates new_data covariate names (gat
 })
 
 test_that("summary.disag_model_mmap_aghq normalizes time-varying slope names (gated)", {
-  skip_if_aghq_opted_out()
+  skip_aghq_integration()
   bundle <- suppressWarnings(get_cached_aghq_fit("aghq_small_onecov_shared", time_varying_betas = TRUE))
   fit <- bundle$fit
 
@@ -99,7 +94,7 @@ test_that("summary.disag_model_mmap_aghq normalizes time-varying slope names (ga
 })
 
 test_that("AGHQ with nlminb optimizer returns expected fit contract (gated)", {
-  skip_if_aghq_opted_out()
+  skip_aghq_integration()
   bundle <- suppressWarnings(
     get_cached_aghq_fit("aghq_small_onecov_shared", optimizer = "nlminb")
   )
@@ -117,7 +112,7 @@ test_that("AGHQ with nlminb optimizer returns expected fit contract (gated)", {
 })
 
 test_that("AGHQ shared-betas fit with two covariates maps slope names and order (gated regression)", {
-  skip_if_aghq_opted_out()
+  skip_aghq_integration()
   data_obj <- get_cached_aghq_prepared_data("aghq_small_twocov_mesh")
   family <- get_test_family_mmap()
   optimizer <- get_test_aghq_optimizer_mmap(family)
@@ -153,7 +148,7 @@ test_that("AGHQ shared-betas fit with two covariates maps slope names and order 
 })
 
 test_that("AGHQ random-betas mode maps betas to random-effect order and prediction works (gated)", {
-  skip_if_aghq_opted_out()
+  skip_aghq_integration()
   bundle <- suppressWarnings(get_cached_aghq_fit(
     "aghq_small_onecov_shared",
     fixed_effect_betas = FALSE
@@ -179,7 +174,7 @@ test_that("AGHQ random-betas mode maps betas to random-effect order and predicti
 })
 
 test_that("AGHQ handles time-varying intercept-only models (no covariates) (gated regression)", {
-  skip_if_aghq_opted_out()
+  skip_aghq_integration()
   family <- get_test_family_mmap()
   optimizer <- get_test_aghq_optimizer_mmap(family)
 
