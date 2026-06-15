@@ -36,7 +36,7 @@ predict_uncertainty_mmap(
 
 - CI:
 
-  Numeric in (0,1); credible‐interval level (default 0.95).
+  Numeric in (0,1); credible-interval level (default 0.95).
 
 ## Value
 

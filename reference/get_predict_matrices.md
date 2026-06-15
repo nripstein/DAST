@@ -40,5 +40,5 @@ get_predict_matrices(
 ## Value
 
 A list with elements: - 'X_list': list of design matrices (each n_cells
-× p, with "Intercept"). - 'A': SPDE projection matrix (n_cells ×
+x p, with "Intercept"). - 'A': SPDE projection matrix (n_cells x
 n_knots). - 'coords': data.frame of x/y coordinates for each cell.

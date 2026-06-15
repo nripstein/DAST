@@ -1,7 +1,7 @@
 # Visual summary plot of prepared data
 
 Combines polygons, aggregation raster, mesh, and (if present) a
-covariate into a 2×2 grid.
+covariate into a 2x2 grid.
 
 ## Usage
 
@@ -30,7 +30,7 @@ plot(x, y = NULL, ..., covariate = 1, time = 1, max_categories = 10)
 
 - time:
 
-  Integer time‐slice (default = 1).
+  Integer time-slice (default = 1).
 
 - max_categories:
 

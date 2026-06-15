@@ -72,7 +72,7 @@ prepare_data_mmap(
 ## Value
 
 An object of class 'disag_data_mmap' with components including -
-'polygon_data', 'covariate_data', 'aggregation_pixels', … -
+'polygon_data', 'covariate_data', 'aggregation_pixels', ... -
 'categorical_covariate_baselines' (normalized baseline labels) -
 'categorical_covariate_schema' (internal encoding schema used for
 fit/predict consistency)

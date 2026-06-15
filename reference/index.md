@@ -10,8 +10,6 @@
   : Fit a multi-map disaggregation model via tmbstan MCMC
 - [`disag_model_mmap_tmb()`](http://noahripstein.com/DAST/reference/disag_model_mmap_tmb.md)
   : Fit a multi-map disaggregation model via TMB
-- [`dummy()`](http://noahripstein.com/DAST/reference/dummy.md) : Roxygen
-  commands
 - [`get_priors()`](http://noahripstein.com/DAST/reference/get_priors.md)
   : Get Default Prior Values for Disaggregation Model
 - [`make_model_object_mmap()`](http://noahripstein.com/DAST/reference/make_model_object_mmap.md)

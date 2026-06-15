@@ -1,7 +1,7 @@
 # Predict mean for multi-map disaggregation (TMB)
 
 Given a fitted TMB model object and optional new covariate data, compute
-the mean‐only prediction (no uncertainty) for one raster.
+the mean-only prediction (no uncertainty) for one raster.
 
 ## Usage
 
