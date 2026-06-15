@@ -25,8 +25,8 @@ If length 0, predictions are intercept-only regardless of provided rasters.}
 }
 \value{
 A list with elements:
-  - 'X_list': list of design matrices (each n_cells × p, with "Intercept").
-  - 'A': SPDE projection matrix (n_cells × n_knots).
+  - 'X_list': list of design matrices (each n_cells x p, with "Intercept").
+  - 'A': SPDE projection matrix (n_cells x n_knots).
   - 'coords': data.frame of x/y coordinates for each cell.
 }
 \description{

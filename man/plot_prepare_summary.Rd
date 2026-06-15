@@ -11,7 +11,7 @@ plot_prepare_summary(disag_data, covariate = 1, time = 1, max_categories = 10)
 
 \item{covariate}{Integer or name of the covariate to display (default = 1).}
 
-\item{time}{Integer time‐slice (default = 1).}
+\item{time}{Integer time-slice (default = 1).}
 
 \item{max_categories}{Maximum number of unique values to consider categorical (default = 10).}
 }
@@ -20,6 +20,6 @@ A ggdraw object (from cowplot) which can be printed.
 }
 \description{
 Combines polygons, aggregation raster, mesh, and (if present) a covariate
-into a 2×2 grid.
+into a 2x2 grid.
 }
 \keyword{internal}

@@ -27,6 +27,6 @@ A list with elements:
 }
 \description{
 Constructs the covariate rasters, field projector, and IID shapefile
-objects needed by the single‐raster prediction routines.
+objects needed by the single-raster prediction routines.
 }
 \keyword{internal}

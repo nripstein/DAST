@@ -27,6 +27,6 @@ A list with components:
 }
 \description{
 Given a fitted TMB model object and optional new covariate data,
-compute the mean‐only prediction (no uncertainty) for one raster.
+compute the mean-only prediction (no uncertainty) for one raster.
 }
 \keyword{internal}
