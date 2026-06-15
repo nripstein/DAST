@@ -10,11 +10,11 @@ Source:
 [`DESCRIPTION`](https://github.com/nripstein/DAST/blob/main/DESCRIPTION)
 
 Ripstein N (2026). *DAST: Spatio-Temporal Disaggregation for Maps with
-Changing Boundaries*. R package version 0.1.0,
+Changing Areal Boundaries*. R package version 0.1.0,
 <https://github.com/nripstein/DAST>.
 
     @Manual{,
-      title = {DAST: Spatio-Temporal Disaggregation for Maps with Changing Boundaries},
+      title = {DAST: Spatio-Temporal Disaggregation for Maps with Changing Areal Boundaries},
       author = {Noah Ripstein},
       year = {2026},
       note = {R package version 0.1.0},

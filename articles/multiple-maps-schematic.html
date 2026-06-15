@@ -36,6 +36,7 @@
 <li><a class="dropdown-item" href="../articles/multiple-maps-schematic.html">Disaggregation With Multiple Maps</a></li>
   </ul>
 </li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><form class="form-inline" role="search">
@@ -72,12 +73,12 @@
 
     
     
-<p>This vignette builds a small synthetic example for the multiple-map
-setting. Two sets of administrative regions cover the same unit-square
-domain, but the boundaries differ. We simulate time-varying fine-scale
-population offsets and counts, aggregate those counts to each map, and
-then use <code>DAST</code> to infer a fine-scale risk surface from the
-two areal observations.</p>
+<p>This vignette builds a small synthetic example of how to use the
+<code>DAST</code> package. Two sets of hypothetical administrative
+regions cover the same domain, but the boundaries differ. We simulate
+time-varying fine-scale population offsets and counts, aggregate those
+counts to each map, and then use <code>DAST</code> to infer a fine-scale
+risk surface from the two areal observations.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/nripstein/DAST" class="external-link">DAST</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
@@ -86,11 +87,8 @@ two areal observations.</p>
 <span></span>
 <span><span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/s2.html" class="external-link">sf_use_s2</a></span><span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
-<h2 id="construct-schematic-maps">Construct schematic maps<a class="anchor" aria-label="anchor" href="#construct-schematic-maps"></a>
+<h2 id="construct-simulated-maps">Construct simulated maps<a class="anchor" aria-label="anchor" href="#construct-simulated-maps"></a>
 </h2>
-<p>The two maps below reuse the geometry from the schematic figure. Map
-1 has four rectangular regions. Map 2 redraws the boundaries into five
-regions.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">make_rect</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">xmin</span>, <span class="va">ymin</span>, <span class="va">xmax</span>, <span class="va">ymax</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_polygon</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span>
@@ -312,32 +310,47 @@ lightweight.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/disag_model_mmap.html">disag_model_mmap</a></span><span class="op">(</span></span>
 <span>  <span class="va">schematic_data</span>,</span>
-<span>  engine <span class="op">=</span> <span class="st">"AGHQ"</span>,</span>
 <span>  family <span class="op">=</span> <span class="st">"negbinomial"</span>,</span>
-<span>  link <span class="op">=</span> <span class="st">"log"</span>,</span>
-<span>  field <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  iid <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  engine.args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>aghq_k <span class="op">=</span> <span class="fl">1</span>, optimizer <span class="op">=</span> <span class="st">"nlminb"</span><span class="op">)</span>,</span>
-<span>  silent <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  engine <span class="op">=</span> <span class="st">"AGHQ"</span>,</span>
+<span>  engine.args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>aghq_k <span class="op">=</span> <span class="fl">1</span>, optimizer <span class="op">=</span> <span class="st">"nlminb"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">fit</span></span>
-<span><span class="co">#&gt; Disaggregation model (multi-map) fit with AGHQ</span></span>
-<span><span class="co">#&gt; ==============================================</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
+<span><span class="co">#&gt; There are 55 random effects, but max_print = 30, so not computing their summary information.</span></span>
+<span><span class="co">#&gt; Set max_print higher than 55 if you would like to summarize the random effects.</span></span>
+<span><span class="co">#&gt; Summary of disaggregation model (multi-map) fit with AGHQ</span></span>
+<span><span class="co">#&gt; =======================================================</span></span>
 <span><span class="co">#&gt; Family: negbinomial</span></span>
 <span><span class="co">#&gt; Link function: log</span></span>
 <span><span class="co">#&gt; Spatial field included: Yes</span></span>
-<span><span class="co">#&gt; IID effects included: No</span></span>
+<span><span class="co">#&gt; IID effects included: Yes</span></span>
 <span><span class="co">#&gt; Betas as fixed effects: Yes</span></span>
 <span><span class="co">#&gt; Quadrature Points: 1</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Fixed effects parameters: 6</span></span>
-<span><span class="co">#&gt; Parameter names:  intercept, slope, log_sigma, log_rho, mode, H </span></span>
+<span><span class="co">#&gt; Parameter estimates:</span></span>
+<span><span class="co">#&gt; ------------------</span></span>
+<span><span class="co">#&gt; AGHQ on a 5 dimensional posterior with  1 1 1 1 1 quadrature points</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Random effects: 1</span></span>
-<span><span class="co">#&gt;   IID effects: 1</span></span>
+<span><span class="co">#&gt; The posterior mode is: -4.037586 0.7223764 -3.85663 -2.477922 -0.2630212 </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Use `summary(...)` for more detailed information about the model fit.</span></span></code></pre></div>
+<span><span class="co">#&gt; The log of the normalizing constant/marginal likelihood is: -29.35156 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; The covariance matrix used for the quadrature is...</span></span>
+<span><span class="co">#&gt;               [,1]          [,2]          [,3]         [,4]          [,5]</span></span>
+<span><span class="co">#&gt; [1,]  0.0206686936 -1.313785e-02  0.0001812960 -0.008217572  2.212679e-03</span></span>
+<span><span class="co">#&gt; [2,] -0.0131378489  2.545940e-02 -0.0010685351 -0.004978154  3.474388e-05</span></span>
+<span><span class="co">#&gt; [3,]  0.0001812962 -1.068535e-03  0.9743869041  0.004511493  7.805125e-04</span></span>
+<span><span class="co">#&gt; [4,] -0.0082175711 -4.978156e-03  0.0045115036  0.869272355 -2.923759e-01</span></span>
+<span><span class="co">#&gt; [5,]  0.0022126784  3.474685e-05  0.0007804848 -0.292375926  7.153994e-01</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Here are some moments and quantiles for the transformed parameter:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;                         mean           sd       2.5%     median      97.5%</span></span>
+<span><span class="co">#&gt; intercept         -4.0375860 8.881784e-16 -4.0375860 -4.0375860 -4.0375860</span></span>
+<span><span class="co">#&gt; risk               0.7223764 2.220446e-16  0.7223764  0.7223764  0.7223764</span></span>
+<span><span class="co">#&gt; iideffect_log_tau -3.8566301 1.332268e-15 -3.8566301 -3.8566301 -3.8566301</span></span>
+<span><span class="co">#&gt; log_sigma         -2.4779224 4.440892e-16 -2.4779224 -2.4779224 -2.4779224</span></span>
+<span><span class="co">#&gt; log_rho           -0.2630212 5.551115e-17 -0.2630212 -0.2630212 -0.2630212</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="predict-on-the-fine-grid">Predict on the fine grid<a class="anchor" aria-label="anchor" href="#predict-on-the-fine-grid"></a>
@@ -348,142 +361,7 @@ likelihood, not the returned rate surface, we multiply each rate raster
 by the matching population raster to visualize expected fine-cell
 counts.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">fit</span>, N <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
-<span><span class="va">pred</span></span>
-<span><span class="co">#&gt; $mean_prediction</span></span>
-<span><span class="co">#&gt; $mean_prediction$prediction</span></span>
-<span><span class="co">#&gt; $mean_prediction$prediction$time_1</span></span>
-<span><span class="co">#&gt; class       : SpatRaster</span></span>
-<span><span class="co">#&gt; size        : 8, 8, 1  (nrow, ncol, nlyr)</span></span>
-<span><span class="co">#&gt; resolution  : 0.125, 0.125  (x, y)</span></span>
-<span><span class="co">#&gt; extent      : 0, 1, 0, 1  (xmin, xmax, ymin, ymax)</span></span>
-<span><span class="co">#&gt; coord. ref. : </span></span>
-<span><span class="co">#&gt; source(s)   : memory</span></span>
-<span><span class="co">#&gt; name        :        y</span></span>
-<span><span class="co">#&gt; min value   : 0.004663</span></span>
-<span><span class="co">#&gt; max value   : 0.067214</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $mean_prediction$prediction$time_2</span></span>
-<span><span class="co">#&gt; class       : SpatRaster</span></span>
-<span><span class="co">#&gt; size        : 8, 8, 1  (nrow, ncol, nlyr)</span></span>
-<span><span class="co">#&gt; resolution  : 0.125, 0.125  (x, y)</span></span>
-<span><span class="co">#&gt; extent      : 0, 1, 0, 1  (xmin, xmax, ymin, ymax)</span></span>
-<span><span class="co">#&gt; coord. ref. : </span></span>
-<span><span class="co">#&gt; source(s)   : memory</span></span>
-<span><span class="co">#&gt; name        :        y</span></span>
-<span><span class="co">#&gt; min value   : 0.004663</span></span>
-<span><span class="co">#&gt; max value   : 0.067214</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $mean_prediction$field</span></span>
-<span><span class="co">#&gt; $mean_prediction$field$time_1</span></span>
-<span><span class="co">#&gt; class       : SpatRaster</span></span>
-<span><span class="co">#&gt; size        : 8, 8, 1  (nrow, ncol, nlyr)</span></span>
-<span><span class="co">#&gt; resolution  : 0.125, 0.125  (x, y)</span></span>
-<span><span class="co">#&gt; extent      : 0, 1, 0, 1  (xmin, xmax, ymin, ymax)</span></span>
-<span><span class="co">#&gt; coord. ref. : </span></span>
-<span><span class="co">#&gt; source(s)   : memory</span></span>
-<span><span class="co">#&gt; name        :         y</span></span>
-<span><span class="co">#&gt; min value   : -0.026119</span></span>
-<span><span class="co">#&gt; max value   :  0.025359</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $mean_prediction$field$time_2</span></span>
-<span><span class="co">#&gt; class       : SpatRaster</span></span>
-<span><span class="co">#&gt; size        : 8, 8, 1  (nrow, ncol, nlyr)</span></span>
-<span><span class="co">#&gt; resolution  : 0.125, 0.125  (x, y)</span></span>
-<span><span class="co">#&gt; extent      : 0, 1, 0, 1  (xmin, xmax, ymin, ymax)</span></span>
-<span><span class="co">#&gt; coord. ref. : </span></span>
-<span><span class="co">#&gt; source(s)   : memory</span></span>
-<span><span class="co">#&gt; name        :         y</span></span>
-<span><span class="co">#&gt; min value   : -0.026119</span></span>
-<span><span class="co">#&gt; max value   :  0.025359</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $mean_prediction$iid</span></span>
-<span><span class="co">#&gt; NULL</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $mean_prediction$covariates</span></span>
-<span><span class="co">#&gt; $mean_prediction$covariates$time_1</span></span>
-<span><span class="co">#&gt; class       : SpatRaster</span></span>
-<span><span class="co">#&gt; size        : 8, 8, 1  (nrow, ncol, nlyr)</span></span>
-<span><span class="co">#&gt; resolution  : 0.125, 0.125  (x, y)</span></span>
-<span><span class="co">#&gt; extent      : 0, 1, 0, 1  (xmin, xmax, ymin, ymax)</span></span>
-<span><span class="co">#&gt; coord. ref. : </span></span>
-<span><span class="co">#&gt; source(s)   : memory</span></span>
-<span><span class="co">#&gt; name        :         y</span></span>
-<span><span class="co">#&gt; min value   : -5.361895</span></span>
-<span><span class="co">#&gt; max value   : -2.713278</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $mean_prediction$covariates$time_2</span></span>
-<span><span class="co">#&gt; class       : SpatRaster</span></span>
-<span><span class="co">#&gt; size        : 8, 8, 1  (nrow, ncol, nlyr)</span></span>
-<span><span class="co">#&gt; resolution  : 0.125, 0.125  (x, y)</span></span>
-<span><span class="co">#&gt; extent      : 0, 1, 0, 1  (xmin, xmax, ymin, ymax)</span></span>
-<span><span class="co">#&gt; coord. ref. : </span></span>
-<span><span class="co">#&gt; source(s)   : memory</span></span>
-<span><span class="co">#&gt; name        :         y</span></span>
-<span><span class="co">#&gt; min value   : -5.361895</span></span>
-<span><span class="co">#&gt; max value   : -2.713278</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $uncertainty_prediction</span></span>
-<span><span class="co">#&gt; $uncertainty_prediction$realisations</span></span>
-<span><span class="co">#&gt; NULL</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $uncertainty_prediction$predictions_ci</span></span>
-<span><span class="co">#&gt; $uncertainty_prediction$predictions_ci$lower</span></span>
-<span><span class="co">#&gt; $uncertainty_prediction$predictions_ci$lower$time_1</span></span>
-<span><span class="co">#&gt; class       : SpatRaster</span></span>
-<span><span class="co">#&gt; size        : 8, 8, 1  (nrow, ncol, nlyr)</span></span>
-<span><span class="co">#&gt; resolution  : 0.125, 0.125  (x, y)</span></span>
-<span><span class="co">#&gt; extent      : 0, 1, 0, 1  (xmin, xmax, ymin, ymax)</span></span>
-<span><span class="co">#&gt; coord. ref. : </span></span>
-<span><span class="co">#&gt; source(s)   : memory</span></span>
-<span><span class="co">#&gt; name        :        y</span></span>
-<span><span class="co">#&gt; min value   : 0.004663</span></span>
-<span><span class="co">#&gt; max value   : 0.067214</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $uncertainty_prediction$predictions_ci$lower$time_2</span></span>
-<span><span class="co">#&gt; class       : SpatRaster</span></span>
-<span><span class="co">#&gt; size        : 8, 8, 1  (nrow, ncol, nlyr)</span></span>
-<span><span class="co">#&gt; resolution  : 0.125, 0.125  (x, y)</span></span>
-<span><span class="co">#&gt; extent      : 0, 1, 0, 1  (xmin, xmax, ymin, ymax)</span></span>
-<span><span class="co">#&gt; coord. ref. : </span></span>
-<span><span class="co">#&gt; source(s)   : memory</span></span>
-<span><span class="co">#&gt; name        :        y</span></span>
-<span><span class="co">#&gt; min value   : 0.004663</span></span>
-<span><span class="co">#&gt; max value   : 0.067214</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $uncertainty_prediction$predictions_ci$upper</span></span>
-<span><span class="co">#&gt; $uncertainty_prediction$predictions_ci$upper$time_1</span></span>
-<span><span class="co">#&gt; class       : SpatRaster</span></span>
-<span><span class="co">#&gt; size        : 8, 8, 1  (nrow, ncol, nlyr)</span></span>
-<span><span class="co">#&gt; resolution  : 0.125, 0.125  (x, y)</span></span>
-<span><span class="co">#&gt; extent      : 0, 1, 0, 1  (xmin, xmax, ymin, ymax)</span></span>
-<span><span class="co">#&gt; coord. ref. : </span></span>
-<span><span class="co">#&gt; source(s)   : memory</span></span>
-<span><span class="co">#&gt; name        :        y</span></span>
-<span><span class="co">#&gt; min value   : 0.004663</span></span>
-<span><span class="co">#&gt; max value   : 0.067214</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $uncertainty_prediction$predictions_ci$upper$time_2</span></span>
-<span><span class="co">#&gt; class       : SpatRaster</span></span>
-<span><span class="co">#&gt; size        : 8, 8, 1  (nrow, ncol, nlyr)</span></span>
-<span><span class="co">#&gt; resolution  : 0.125, 0.125  (x, y)</span></span>
-<span><span class="co">#&gt; extent      : 0, 1, 0, 1  (xmin, xmax, ymin, ymax)</span></span>
-<span><span class="co">#&gt; coord. ref. : </span></span>
-<span><span class="co">#&gt; source(s)   : memory</span></span>
-<span><span class="co">#&gt; name        :        y</span></span>
-<span><span class="co">#&gt; min value   : 0.004663</span></span>
-<span><span class="co">#&gt; max value   : 0.067214</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; attr(,"class")</span></span>
-<span><span class="co">#&gt; [1] "disag_prediction_mmap_aghq" "list"</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">fit</span>, N <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">prediction_rasters</span> <span class="op">&lt;-</span> <span class="va">pred</span><span class="op">$</span><span class="va">mean_prediction</span><span class="op">$</span><span class="va">prediction</span></span>
 <span></span>
@@ -497,7 +375,7 @@ counts.</p>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="multiple-maps-schematic_files/figure-html/predictions-1.png" class="r-plt" alt="" width="672"></p>
 <p>This toy example is intentionally small, but it shows the main
-contract: multiple areal maps, a population offset raster, optional
+structure: multiple areal maps, a population offset raster, optional
 covariates, model fitting, and fine-grid prediction all pass through the
 same multi-map interface.</p>
 </div>

@@ -1,7 +1,7 @@
 # Disaggregation With Multiple Maps
 
-This vignette builds a small synthetic example for the multiple-map
-setting. Two sets of administrative regions cover the same unit-square
+This vignette builds a small synthetic example of how to use the `DAST`
+package. Two sets of hypothetical administrative regions cover the same
 domain, but the boundaries differ. We simulate time-varying fine-scale
 population offsets and counts, aggregate those counts to each map, and
 then use `DAST` to infer a fine-scale risk surface from the two areal
@@ -17,11 +17,7 @@ library(terra)
 sf::sf_use_s2(FALSE)
 ```
 
-## Construct schematic maps
-
-The two maps below reuse the geometry from the schematic figure. Map 1
-has four rectangular regions. Map 2 redraws the boundaries into five
-regions.
+## Construct simulated maps
 
 ``` r
 
@@ -259,32 +255,47 @@ lightweight.
 
 fit <- disag_model_mmap(
   schematic_data,
-  engine = "AGHQ",
   family = "negbinomial",
-  link = "log",
-  field = TRUE,
-  iid = FALSE,
-  engine.args = list(aghq_k = 1, optimizer = "nlminb"),
-  silent = TRUE
+  engine = "AGHQ",
+  engine.args = list(aghq_k = 1, optimizer = "nlminb")
 )
 
-fit
-#> Disaggregation model (multi-map) fit with AGHQ
-#> ==============================================
+summary(fit)
+#> There are 55 random effects, but max_print = 30, so not computing their summary information.
+#> Set max_print higher than 55 if you would like to summarize the random effects.
+#> Summary of disaggregation model (multi-map) fit with AGHQ
+#> =======================================================
 #> Family: negbinomial
 #> Link function: log
 #> Spatial field included: Yes
-#> IID effects included: No
+#> IID effects included: Yes
 #> Betas as fixed effects: Yes
 #> Quadrature Points: 1
 #> 
-#> Fixed effects parameters: 6
-#> Parameter names:  intercept, slope, log_sigma, log_rho, mode, H 
+#> Parameter estimates:
+#> ------------------
+#> AGHQ on a 5 dimensional posterior with  1 1 1 1 1 quadrature points
 #> 
-#> Random effects: 1
-#>   IID effects: 1
+#> The posterior mode is: -4.037586 0.7223764 -3.85663 -2.477922 -0.2630212 
 #> 
-#> Use `summary(...)` for more detailed information about the model fit.
+#> The log of the normalizing constant/marginal likelihood is: -29.35156 
+#> 
+#> The covariance matrix used for the quadrature is...
+#>               [,1]          [,2]          [,3]         [,4]          [,5]
+#> [1,]  0.0206686936 -1.313785e-02  0.0001812960 -0.008217572  2.212679e-03
+#> [2,] -0.0131378489  2.545940e-02 -0.0010685351 -0.004978154  3.474388e-05
+#> [3,]  0.0001812962 -1.068535e-03  0.9743869041  0.004511493  7.805125e-04
+#> [4,] -0.0082175711 -4.978156e-03  0.0045115036  0.869272355 -2.923759e-01
+#> [5,]  0.0022126784  3.474685e-05  0.0007804848 -0.292375926  7.153994e-01
+#> 
+#> Here are some moments and quantiles for the transformed parameter:
+#> 
+#>                         mean           sd       2.5%     median      97.5%
+#> intercept         -4.0375860 8.881784e-16 -4.0375860 -4.0375860 -4.0375860
+#> risk               0.7223764 2.220446e-16  0.7223764  0.7223764  0.7223764
+#> iideffect_log_tau -3.8566301 1.332268e-15 -3.8566301 -3.8566301 -3.8566301
+#> log_sigma         -2.4779224 4.440892e-16 -2.4779224 -2.4779224 -2.4779224
+#> log_rho           -0.2630212 5.551115e-17 -0.2630212 -0.2630212 -0.2630212
 ```
 
 ## Predict on the fine grid
@@ -298,141 +309,6 @@ counts.
 ``` r
 
 pred <- predict(fit, N = 10)
-pred
-#> $mean_prediction
-#> $mean_prediction$prediction
-#> $mean_prediction$prediction$time_1
-#> class       : SpatRaster
-#> size        : 8, 8, 1  (nrow, ncol, nlyr)
-#> resolution  : 0.125, 0.125  (x, y)
-#> extent      : 0, 1, 0, 1  (xmin, xmax, ymin, ymax)
-#> coord. ref. : 
-#> source(s)   : memory
-#> name        :        y
-#> min value   : 0.004663
-#> max value   : 0.067214
-#> 
-#> $mean_prediction$prediction$time_2
-#> class       : SpatRaster
-#> size        : 8, 8, 1  (nrow, ncol, nlyr)
-#> resolution  : 0.125, 0.125  (x, y)
-#> extent      : 0, 1, 0, 1  (xmin, xmax, ymin, ymax)
-#> coord. ref. : 
-#> source(s)   : memory
-#> name        :        y
-#> min value   : 0.004663
-#> max value   : 0.067214
-#> 
-#> 
-#> $mean_prediction$field
-#> $mean_prediction$field$time_1
-#> class       : SpatRaster
-#> size        : 8, 8, 1  (nrow, ncol, nlyr)
-#> resolution  : 0.125, 0.125  (x, y)
-#> extent      : 0, 1, 0, 1  (xmin, xmax, ymin, ymax)
-#> coord. ref. : 
-#> source(s)   : memory
-#> name        :         y
-#> min value   : -0.026119
-#> max value   :  0.025359
-#> 
-#> $mean_prediction$field$time_2
-#> class       : SpatRaster
-#> size        : 8, 8, 1  (nrow, ncol, nlyr)
-#> resolution  : 0.125, 0.125  (x, y)
-#> extent      : 0, 1, 0, 1  (xmin, xmax, ymin, ymax)
-#> coord. ref. : 
-#> source(s)   : memory
-#> name        :         y
-#> min value   : -0.026119
-#> max value   :  0.025359
-#> 
-#> 
-#> $mean_prediction$iid
-#> NULL
-#> 
-#> $mean_prediction$covariates
-#> $mean_prediction$covariates$time_1
-#> class       : SpatRaster
-#> size        : 8, 8, 1  (nrow, ncol, nlyr)
-#> resolution  : 0.125, 0.125  (x, y)
-#> extent      : 0, 1, 0, 1  (xmin, xmax, ymin, ymax)
-#> coord. ref. : 
-#> source(s)   : memory
-#> name        :         y
-#> min value   : -5.361895
-#> max value   : -2.713278
-#> 
-#> $mean_prediction$covariates$time_2
-#> class       : SpatRaster
-#> size        : 8, 8, 1  (nrow, ncol, nlyr)
-#> resolution  : 0.125, 0.125  (x, y)
-#> extent      : 0, 1, 0, 1  (xmin, xmax, ymin, ymax)
-#> coord. ref. : 
-#> source(s)   : memory
-#> name        :         y
-#> min value   : -5.361895
-#> max value   : -2.713278
-#> 
-#> 
-#> 
-#> $uncertainty_prediction
-#> $uncertainty_prediction$realisations
-#> NULL
-#> 
-#> $uncertainty_prediction$predictions_ci
-#> $uncertainty_prediction$predictions_ci$lower
-#> $uncertainty_prediction$predictions_ci$lower$time_1
-#> class       : SpatRaster
-#> size        : 8, 8, 1  (nrow, ncol, nlyr)
-#> resolution  : 0.125, 0.125  (x, y)
-#> extent      : 0, 1, 0, 1  (xmin, xmax, ymin, ymax)
-#> coord. ref. : 
-#> source(s)   : memory
-#> name        :        y
-#> min value   : 0.004663
-#> max value   : 0.067214
-#> 
-#> $uncertainty_prediction$predictions_ci$lower$time_2
-#> class       : SpatRaster
-#> size        : 8, 8, 1  (nrow, ncol, nlyr)
-#> resolution  : 0.125, 0.125  (x, y)
-#> extent      : 0, 1, 0, 1  (xmin, xmax, ymin, ymax)
-#> coord. ref. : 
-#> source(s)   : memory
-#> name        :        y
-#> min value   : 0.004663
-#> max value   : 0.067214
-#> 
-#> 
-#> $uncertainty_prediction$predictions_ci$upper
-#> $uncertainty_prediction$predictions_ci$upper$time_1
-#> class       : SpatRaster
-#> size        : 8, 8, 1  (nrow, ncol, nlyr)
-#> resolution  : 0.125, 0.125  (x, y)
-#> extent      : 0, 1, 0, 1  (xmin, xmax, ymin, ymax)
-#> coord. ref. : 
-#> source(s)   : memory
-#> name        :        y
-#> min value   : 0.004663
-#> max value   : 0.067214
-#> 
-#> $uncertainty_prediction$predictions_ci$upper$time_2
-#> class       : SpatRaster
-#> size        : 8, 8, 1  (nrow, ncol, nlyr)
-#> resolution  : 0.125, 0.125  (x, y)
-#> extent      : 0, 1, 0, 1  (xmin, xmax, ymin, ymax)
-#> coord. ref. : 
-#> source(s)   : memory
-#> name        :        y
-#> min value   : 0.004663
-#> max value   : 0.067214
-#> 
-#> 
-#> 
-#> 
-#> attr(,"class")
-#> [1] "disag_prediction_mmap_aghq" "list"
 ```
 
 ``` r
@@ -451,7 +327,7 @@ cowplot::plot_grid(
 
 ![](multiple-maps-schematic_files/figure-html/predictions-1.png)
 
-This toy example is intentionally small, but it shows the main contract:
-multiple areal maps, a population offset raster, optional covariates,
-model fitting, and fine-grid prediction all pass through the same
-multi-map interface.
+This toy example is intentionally small, but it shows the main
+structure: multiple areal maps, a population offset raster, optional
+covariates, model fitting, and fine-grid prediction all pass through the
+same multi-map interface.
