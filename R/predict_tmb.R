@@ -31,6 +31,16 @@ normalize_new_data_for_prediction_tmb <- function(new_data, n_times) {
 #' @param N Number of Monte Carlo draws for uncertainty estimation.
 #' @param CI Credible interval level (default 0.95).
 #' @param ... Further arguments.
+#' @return An object of class `disag_prediction_mmap` (also a list) with:
+#'   - `mean_prediction`: a list containing time-layered `SpatRaster`s named
+#'     `time_<time point>`: `prediction` (response-scale mean prediction),
+#'     `field` (spatial-field contribution, or `NULL` when no field was
+#'     fitted), `iid` (polygon IID contribution when requested and supported,
+#'     otherwise `NULL`), and `covariates` (covariate-only linear predictor).
+#'   - `uncertainty_prediction`: a list containing `realisations`, a list of
+#'     one `SpatRaster` stack per time point with `N` Monte Carlo draws, and
+#'     `predictions_ci`, a list with time-layered `SpatRaster`s `lower` and
+#'     `upper` containing cell-wise credible bounds at level `CI`.
 #'
 #' @export
 #' @method predict disag_model_mmap_tmb

@@ -131,3 +131,18 @@ fit_mcmc <- disag_model_mmap(
 
 summary(fit_mcmc)
 ```
+
+## Citation
+
+If you use `DAST`, please cite:
+
+```bibtex
+@misc{ripstein2026spatiotemporal,
+  title         = {Spatio-Temporal Disaggregation with Changing Areal Boundaries},
+  author        = {Ripstein, Noah and Brown, Patrick and Stafford, Jamie},
+  year          = {2026},
+  eprint        = {2606.25074},
+  archivePrefix = {arXiv},
+  url           = {https://arxiv.org/abs/2606.25074}
+}
+```

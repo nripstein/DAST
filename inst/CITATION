@@ -1,0 +1,18 @@
+bibentry(
+  bibtype = "Article",
+  title = "Spatio-Temporal Disaggregation with Changing Areal Boundaries",
+  author = c(
+    person("Noah", "Ripstein"),
+    person("Patrick", "Brown"),
+    person("Jamie", "Stafford")
+  ),
+  journal = "arXiv preprint arXiv:2606.25074",
+  year = "2026",
+  doi = "10.48550/arXiv.2606.25074",
+  url = "https://arxiv.org/abs/2606.25074",
+  textVersion = paste(
+    "Ripstein, Brown and Stafford (2026).",
+    "Spatio-Temporal Disaggregation with Changing Areal Boundaries.",
+    "doi:10.48550/arXiv.2606.25074"
+  )
+)

@@ -20,16 +20,33 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' # Check defaults before fitting
-#' defaults <- get_priors(my_data)
-#' print(defaults)
+#' # Create minimal polygon and covariate inputs for one time point.
+#' polygons <- sf::st_sf(
+#'   area_id = 1:2,
+#'   response = c(10, 12),
+#'   geometry = sf::st_sfc(
+#'     sf::st_polygon(list(rbind(c(0, 0), c(1, 0), c(1, 2), c(0, 2), c(0, 0)))),
+#'     sf::st_polygon(list(rbind(c(1, 0), c(2, 0), c(2, 2), c(1, 2), c(1, 0)))),
+#'     crs = 3857
+#'   )
+#' )
+#' covariate <- terra::rast(
+#'   ncols = 2, nrows = 2, xmin = 0, xmax = 2, ymin = 0, ymax = 2,
+#'   crs = "EPSG:3857"
+#' )
+#' terra::values(covariate) <- c(1, 2, 3, 4)
 #'
-#' # Use defaults as a base to modify specific values
+#' data <- suppressMessages(prepare_data_mmap(
+#'   polygon_shapefile_list = list(polygons),
+#'   covariate_rasters_list = list(covariate),
+#'   make_mesh = FALSE
+#' ))
+#'
+#' # Inspect defaults and modify a prior for a later model fit.
+#' defaults <- get_priors(data)
+#' defaults[c("prior_rho_min", "prior_sigma_max")]
 #' my_priors <- defaults
-#' my_priors$prior_rho_prob <- 0.05 # Stricter probability
-#' fit <- disag_model_mmap(my_data, priors = my_priors)
-#' }
+#' my_priors$prior_rho_prob <- 0.05
 #' @keywords external
 get_priors <- function(data) {
 

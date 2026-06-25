@@ -10,7 +10,11 @@ Authors@R: c(
     )
   )
 Description: Tools for spatio-temporal disaggregation of areal data across multiple 
-    time points, including support for changing polygon boundaries. Combines polygon-level 
+    time points, including support for changing polygon boundaries. Implements 
+    methods for spatially aggregated log-Gaussian Cox process models with 
+    changing areal boundaries as described in Ripstein, Brown and Stafford 
+    (2026) "Spatio-Temporal Disaggregation with Changing Areal Boundaries" 
+    <doi:10.48550/arXiv.2606.25074>. Combines polygon-level 
     observations, population rasters and optional covariate rasters to infer fine-scale 
     spatial fields over time. Models can be efficiently fit using 'TMB' (Template Model 
     Builder) and adaptive Gauss-Hermite quadrature for fast approximate inference
