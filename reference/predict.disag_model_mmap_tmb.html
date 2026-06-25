@@ -81,6 +81,19 @@
 <dd><p>Further arguments.</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>An object of class `disag_prediction_mmap` (also a list) with:
+  - `mean_prediction`: a list containing time-layered `SpatRaster`s named
+    `time_&lt;time point&gt;`: `prediction` (response-scale mean prediction),
+    `field` (spatial-field contribution, or `NULL` when no field was
+    fitted), `iid` (polygon IID contribution when requested and supported,
+    otherwise `NULL`), and `covariates` (covariate-only linear predictor).
+  - `uncertainty_prediction`: a list containing `realisations`, a list of
+    one `SpatRaster` stack per time point with `N` Monte Carlo draws, and
+    `predictions_ci`, a list with time-layered `SpatRaster`s `lower` and
+    `upper` containing cell-wise credible bounds at level `CI`.</p>
+    </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

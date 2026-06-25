@@ -7,16 +7,16 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/nripstein/DAST/blob/main/DESCRIPTION)
+[`inst/CITATION`](https://github.com/nripstein/DAST/blob/main/inst/CITATION)
 
-Ripstein N (2026). *DAST: Spatio-Temporal Disaggregation for Maps with
-Changing Areal Boundaries*. R package version 0.1.0,
-<https://github.com/nripstein/DAST>.
+Ripstein, Brown and Stafford (2026). Spatio-Temporal Disaggregation with
+Changing Areal Boundaries. doi:10.48550/arXiv.2606.25074
 
-    @Manual{,
-      title = {DAST: Spatio-Temporal Disaggregation for Maps with Changing Areal Boundaries},
-      author = {Noah Ripstein},
+    @Article{,
+      title = {Spatio-Temporal Disaggregation with Changing Areal Boundaries},
+      author = {Noah Ripstein and Patrick Brown and Jamie Stafford},
+      journal = {arXiv preprint arXiv:2606.25074},
       year = {2026},
-      note = {R package version 0.1.0},
-      url = {https://github.com/nripstein/DAST},
+      doi = {10.48550/arXiv.2606.25074},
+      url = {https://arxiv.org/abs/2606.25074},
     }

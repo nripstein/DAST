@@ -11,8 +11,8 @@
 <script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Spatio-Temporal Disaggregation for Maps with Changing Areal Boundaries">
-<meta name="description" content="Tools for spatio-temporal disaggregation of areal data across multiple time points, including support for changing polygon boundaries. Combines polygon-level observations, population rasters and optional covariate rasters to infer fine-scale spatial fields over time. Models can be efficiently fit using TMB (Template Model Builder) and adaptive Gauss-Hermite quadrature for fast approximate inference or via tmbstan for MCMC.">
-<meta property="og:description" content="Tools for spatio-temporal disaggregation of areal data across multiple time points, including support for changing polygon boundaries. Combines polygon-level observations, population rasters and optional covariate rasters to infer fine-scale spatial fields over time. Models can be efficiently fit using TMB (Template Model Builder) and adaptive Gauss-Hermite quadrature for fast approximate inference or via tmbstan for MCMC.">
+<meta name="description" content='Tools for spatio-temporal disaggregation of areal data across multiple time points, including support for changing polygon boundaries. Implements methods for spatially aggregated log-Gaussian Cox process models with changing areal boundaries as described in Ripstein, Brown and Stafford (2026) "Spatio-Temporal Disaggregation with Changing Areal Boundaries" &lt;doi:10.48550/arXiv.2606.25074&gt;. Combines polygon-level observations, population rasters and optional covariate rasters to infer fine-scale spatial fields over time. Models can be efficiently fit using TMB (Template Model Builder) and adaptive Gauss-Hermite quadrature for fast approximate inference or via tmbstan for MCMC.'>
+<meta property="og:description" content='Tools for spatio-temporal disaggregation of areal data across multiple time points, including support for changing polygon boundaries. Implements methods for spatially aggregated log-Gaussian Cox process models with changing areal boundaries as described in Ripstein, Brown and Stafford (2026) "Spatio-Temporal Disaggregation with Changing Areal Boundaries" &lt;doi:10.48550/arXiv.2606.25074&gt;. Combines polygon-level observations, population rasters and optional covariate rasters to infer fine-scale spatial fields over time. Models can be efficiently fit using TMB (Template Model Builder) and adaptive Gauss-Hermite quadrature for fast approximate inference or via tmbstan for MCMC.'>
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -183,6 +183,19 @@
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit_mcmc</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
+</h2>
+<p>If you use <code>DAST</code>, please cite:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bibtex"><code class="sourceCode bibtex"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="va">@misc</span>{<span class="ot">ripstein2026spatiotemporal</span>,</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="dt">title</span>         = {Spatio-Temporal Disaggregation with Changing Areal Boundaries},</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="dt">author</span>        = {Ripstein, Noah and Brown, Patrick and Stafford, Jamie},</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="dt">year</span>          = {2026},</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  <span class="dt">eprint</span>        = {2606.25074},</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>  <span class="dt">archivePrefix</span> = {arXiv},</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>  <span class="dt">url</span>           = {https://arxiv.org/abs/2606.25074}</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>}</span></code></pre></div>
 </div>
 </div>
 
