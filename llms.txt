@@ -7,22 +7,19 @@ infer fine-scale spatial risk surfaces.
 
 ## Installation
 
-You can install from GitHub with:
+You can install the released version of DAST from CRAN:
 
 ``` r
 
-
-# install.packages("remotes")
-
-remotes::install_github("nripstein/DAST")
+install.packages("DAST")
 ```
 
-or the development branch from
+You can install the development version from GitHub:
 
 ``` r
 
-
-remotes::install_github("nripstein/DAST", ref = "development")
+# install.packages("remotes")
+remotes::install_github("nripstein/DAST")
 ```
 
 ## Data Requirements
