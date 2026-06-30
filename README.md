@@ -1,4 +1,8 @@
-[![R-CMD-check](https://github.com/nripstein/DAST/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/nripstein/DAST/actions/workflows/R-CMD-check.yaml) [![Codecov test coverage](https://codecov.io/gh/nripstein/DAST/graph/badge.svg)](https://app.codecov.io/gh/nripstein/DAST)
+[![CRAN status](https://www.r-pkg.org/badges/version/DAST)](https://CRAN.R-project.org/package=DAST)
+[![R-CMD-check](https://github.com/nripstein/DAST/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/nripstein/DAST/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/nripstein/DAST/graph/badge.svg)](https://app.codecov.io/gh/nripstein/DAST)
+
+
 
 # DAST (DisAggregation in Space and Time)
 
@@ -9,27 +13,17 @@ DAST fits spatial disaggregation models for areal data observed on maps where po
 
 ## Installation
 
+You can install the released version of DAST from CRAN:
 
-You can install from GitHub with:
-
-  
-
-``` r
-
-# install.packages("remotes")
-
-remotes::install_github("nripstein/DAST")
-
+```r
+install.packages("DAST")
 ```
 
-  
+You can install the development version from GitHub:
 
-or the development branch from
-
-``` r
-
-remotes::install_github("nripstein/DAST", ref = "development")
-
+```r
+# install.packages("remotes")
+remotes::install_github("nripstein/DAST")
 ```
 
   
